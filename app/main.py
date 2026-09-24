@@ -1,8 +1,11 @@
-"""FastAPI application: GET /health and GET /v1/model/info only (contract 1.0.1).
+"""FastAPI application (contract 1.0.1): GET /health, GET /v1/model/info and
+POST /v1/analyze.
 
-No model is trained or loaded at F2, so the service reports itself healthy
-with model_available=false and never fabricates a model version or a
-prediction. /v1/analyze and /v1/forecast are deliberately not implemented.
+No model is trained or loaded, so the service reports model_available=false
+and never fabricates a model version or a prediction. POST /v1/analyze is a
+DETERMINISTIC RULE baseline (method "rule"); it needs no model and therefore
+does not return MODEL_UNAVAILABLE. /v1/forecast is deliberately not
+implemented.
 """
 
 from uuid import uuid4
@@ -12,7 +15,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from .analysis.service import analyze
 from .config import CONTRACT_VERSION
+from .errors import ApiError
 
 # Private service called only by auditor-backend: interactive docs and the
 # OpenAPI route are disabled so only the contract routes exist.
@@ -38,6 +43,11 @@ async def request_id(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Request-Id"] = request.state.request_id
     return response
+
+
+@app.exception_handler(ApiError)
+async def api_error(_request: Request, exc: ApiError) -> JSONResponse:
+    return JSONResponse(status_code=exc.status, content=exc.body())
 
 
 @app.exception_handler(StarletteHTTPException)
@@ -79,3 +89,9 @@ async def model_info(request: Request) -> dict:
             "contract_version": CONTRACT_VERSION,
         },
     )
+
+
+@app.post("/v1/analyze")
+async def analyze_route(request: Request) -> dict:
+    # Inline bounded data only (API.md Example A): no database, files or callbacks.
+    return envelope(request, analyze(await request.body()))

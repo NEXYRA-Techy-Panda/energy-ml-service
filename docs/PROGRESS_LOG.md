@@ -210,3 +210,35 @@ correction entry; do not rewrite history.
   training, deployment.
 - Next action: commit + push, verify remote; next layer F3 pending its prompt.
 - Commit references: F2-B hash recorded in the F2-B return report.
+
+---
+
+## 2026-09-24 20:38:41 +05:30 (IST) — P010 started (actual)
+
+- Assignment P010 (category: foundation handoff + Mohan feature; layer
+  F6-S documentation / Python deterministic analysis foundation), Agent B —
+  Claude Code, owner Mohan.
+- Permitted writes: simulation-backend continuity + handoff documentation
+  ONLY; energy-ml-service implementation + docs. No simulator source,
+  migrations, contracts, auditor-backend, frontends or parent files.
+- Verified state: simulation-backend `6d26309`, energy-ml-service
+  `22b0a08`, both == origin/main, clean; no AGENTS.md.
+- Review record: P008 occupancy/schedule behaviour accepted based on supplied
+  evidence; run-policy timing defect remains open. (F2-B was accepted based
+  on supplied evidence, as recorded in later assignments.)
+- Next action: implement deterministic POST /v1/analyze (vacant-beyond-grace rule) + tests.
+
+---
+
+## 2026-09-24 20:44:41 +05:30 (IST) — P010 ML foundation completed (actual)
+
+- Deterministic POST /v1/analyze (vacant-beyond-grace-v1; method rule; no
+  model). Validation: version, bounds (≤2000/≤2000 → 413), real timestamps,
+  window, references, policy effectivity (no retroactive future policy),
+  duplicates (identical deduped + warned, conflicting 400), energy
+  consistency, forbidden fault fields anywhere.
+- Results: pytest 45 passed; pip check clean; check_env OK; verifier 75/75;
+  live port 8000: fixture → one vacant_but_on light finding (0.01 kWh
+  avoidable, ₹0.10), fridge excluded.
+- model_available stays false; forecast not implemented.
+- Next action: commit + push; stop after P010. Review pending.

@@ -30,7 +30,7 @@ def test_model_info_is_uninitialised_not_fabricated():
     }
 
 
-@pytest.mark.parametrize("path", ["/v1/analyze", "/v1/forecast", "/docs", "/openapi.json", "/api/v1/health"])
+@pytest.mark.parametrize("path", ["/v1/forecast", "/docs", "/openapi.json", "/api/v1/health"])
 def test_unimplemented_routes_return_not_found_envelope(path):
     res = client.post(path) if path.startswith("/v1/") else client.get(path)
     assert res.status_code == 404

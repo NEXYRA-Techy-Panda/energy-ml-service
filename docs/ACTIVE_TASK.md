@@ -1,17 +1,18 @@
 # ACTIVE_TASK — energy-ml-service
 
-## Layer ID
+## Assignment / Layer ID
 
-F2-B (backend application foundations: simulation-backend, auditor-backend,
-energy-ml-service). Agent B. Developer: Mohan.
+P010 — ML foundation (deterministic analysis baseline). Agent B — Claude
+Code. Category: foundation handoff + Mohan feature. Owner: Mohan.
 
-## Objective
+## Scope
 
-Scaffold this repository's application foundation against contract 1.0.1
-(frozen, read-only during F2-B): health route(s) only, env config, formal
-JSON Schema validation (Node repos), reproducible dependencies, verification,
-docs, commit + push. No DB, simulation, uploads, interservice calls,
-training or deployment. Stop after F2-B (no F3/F4).
+Implement POST /v1/analyze as an explicit deterministic rule baseline
+("eligible device operated while its room was vacant beyond its vacancy
+grace"), with strict request validation (version, bounds, timestamps,
+references, policies, duplicates, energy consistency, ≤2000 device and
+≤2000 room intervals → 413, forbidden fault fields). No model training,
+no forecast, no DB/files/callbacks. model_available stays false.
 
 ## Task status
 
@@ -21,70 +22,35 @@ completed
 
 pending
 
-## Ownership
-
-- Agent B owns ONLY `simulation-backend`, `auditor-backend`,
-  `energy-ml-service`. Agent A concurrently owns both frontends — do not
-  write to, probe, or kill processes of the frontends; no parent-level files.
-- Repository: `energy-ml-service` — port 8000.
-
 ## Previous task outcome (preserved)
 
-F1-R2 (contract 1.0.1) completed and pushed; accepted by the architecture
-lead based on supplied evidence. Verifier 75/75 at F2-B start.
+F2-B scaffold (`22b0a08`) accepted based on supplied evidence.
 
 ## Current branch
 
-`main` at `a585d1aa792aacfe3711c33f53a44275bb2f0b98` (== origin/main after fetch; clean tree).
+`main` at `22b0a08c29d79707588581227caaf3dbfa3f5aa3` (== origin/main, clean).
 
 ## Last checkpoint timestamp, including timezone
 
-2026-09-24 19:39:10 +05:30 (IST) — F2-B implementation completed; committing + pushing.
+2026-09-24 20:44:41 +05:30 (IST) — P010 ML implementation completed; committing + pushing.
 
-## Applicable contract version
+## Completed work
 
-1.0.1 (implementation baseline; contracts/v1 + scripts/verify-contract.mjs read-only).
-
-## Completed steps
-
-1. Startup: no AGENTS.md; clean + in sync; ports free; baseline verifier 75/75.
-2. Scaffold + pinned dependencies written (see docs/F2_B_EVIDENCE.md).
-3. All checks green; live HTTP verification on the assigned port.
-4. Windows Smart App Control blocked a pandas extension; Mohan changed the
-   Windows setting; re-test passed.
-5. README, HANDOFF (F2-B addendum), PROGRESS_LOG, F2_B_EVIDENCE updated.
-
-## Files changed
-
-Scaffold source/config/tests, dependency manifests (+lock/requirements), .env.example, .gitignore (`!.env.example`), README.md, docs/HANDOFF.md, docs/ACTIVE_TASK.md, docs/PROGRESS_LOG.md, docs/F2_B_EVIDENCE.md. contracts/v1 and scripts/verify-contract.mjs unchanged.
-
-## Verification performed and actual results
-
-verify-contract 75/75; check_env exit 0 (Python 3.13.15 venv, imports OK); pip check clean; pytest 8 passed; fresh-venv repro identical; live GET http://localhost:8000/health and /v1/model/info → 200 uninitialised envelopes; /v1/analyze 404.
-
-## Incomplete edits and uncommitted changes
-
-None beyond the F2-B commit in progress.
-
-## Blockers or unknowns
-
-- None blocking. Contract ambiguities reported (not changed) in docs/F2_B_EVIDENCE.md.
-- Graceful shutdown not exercised live (Windows hard-terminate used).
+1. Startup checks; fixture/oracle/API Example A read.
+2. app/errors.py; app/analysis/{models,validate,rules,service}.py; POST /v1/analyze.
+3. tests/test_analyze.py (37 cases) + scaffold test updated: 45/45.
+4. pip check clean; check_env OK; verifier 75/75.
+5. Live port-8000 check (health, model info, analyze fixture, fault field 400, 2001 → 413, forecast 404); processes stopped.
+6. Docs: README, HANDOFF, PROGRESS_LOG, P010_ML_FOUNDATION_EVIDENCE.md.
 
 ## Exact next action
 
-Commit + push F2-B, verify remote hash, return F2-B evidence. Then STOP — F3 only when its prompt is assigned; no F4.
-
-## Planned checks
-
-verify:contract, validate:schema (Node), typecheck, lint, build, test,
-live HTTP health + not-found checks on the assigned port (Node); interpreter,
-imports, pip check, pytest, live uvicorn on 8000 (Python).
+Commit + push energy-ml-service, verify remote hash. Then STOP — auditor orchestration (F4) and any model work only when assigned.
 
 ## Processes started by Agent B
 
-Started for live checks (19:35 IST) and stopped: sim node 8184, auditor node 21296, python launcher 15116 → interpreter 9456. None left running; ports 4000/4001/8000 free.
+Python service (launcher 15684 → interpreter 21608) on port 8000 for the live check — stopped; none left running.
 
 ## Commit reference
 
-Base: `a585d1aa792aacfe3711c33f53a44275bb2f0b98`. F2-B: the commit containing this file (hash in the F2-B return report).
+Base: `22b0a08`. P010: the commit containing this file (hash in the P010 return report).

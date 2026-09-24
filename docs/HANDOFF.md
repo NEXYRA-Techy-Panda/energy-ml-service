@@ -2,8 +2,9 @@
 
 ## 0. Continuity and current layer (F0.1, 2026-09-24)
 
-- Current layer: **F2-B** (backend application scaffold) — status
-  **completed**, review **pending** (F1-R2 accepted based on supplied evidence). Contract: **1.0.1 defined** (canonical
+- Current layer: **P010 ML foundation** (deterministic analysis baseline) —
+  status **completed**, review **pending** (F2-B accepted based on supplied
+  evidence). Contract: **1.0.1 defined** (canonical
   `simulation-backend/contracts/v1/`, mirrored to siblings; replaces the
   unaccepted 1.0.0 prototype, no backward compatibility claimed).
 - Continuity files: [ACTIVE_TASK.md](ACTIVE_TASK.md) and [PROGRESS_LOG.md](PROGRESS_LOG.md).
@@ -80,6 +81,18 @@
   setting (see evidence). Deliberately not implemented: /v1/analyze,
   /v1/forecast, model training/loading, CUDA/deep learning, deployment. Next
   layer: **F3**, pending its assigned prompt.
+- P010 addendum (2026-09-24, Agent B — Claude Code, implementation completed,
+  review **pending**): POST /v1/analyze implemented as a deterministic rule
+  baseline (vacant-beyond-grace-v1, method "rule", no model, no
+  probabilities); strict closed request models + semantic validation
+  (version, timestamps/window, references, policy effectivity, duplicates,
+  energy consistency, forbidden fault fields anywhere); ≤2000 device and
+  ≤2000 room intervals else 413. model_available stays false; analyze does
+  not return MODEL_UNAVAILABLE because the rule needs no model; forecast not
+  implemented. Tests 45/45, pip check clean, verifier 75/75, live port-8000
+  check. Known dependency: simulator exports affected by the open run-policy
+  timing defect will be rejected (future effective_from). Evidence:
+  [P010_ML_FOUNDATION_EVIDENCE.md](P010_ML_FOUNDATION_EVIDENCE.md).
 
 ## 1. Purpose and owner
 

@@ -9,13 +9,34 @@ simulation and auditing project.
 - **Owner**: Mohan.
 - **Local port**: `8000`.
 
-## Status (F2-B, 2026-09-24)
+## Status (P010, 2026-09-24)
 
-FastAPI scaffold implemented; review pending. Routes: `GET /health`
-(`status: "ok"`, `model_available: false`) and `GET /v1/model/info`
-(versions `null`, `model_available: false`, `contract_version: "1.0.1"`).
-No model is trained or loaded; `/v1/analyze` and `/v1/forecast` are not
-implemented. Evidence: [F2-B evidence](docs/F2_B_EVIDENCE.md).
+Routes (contract 1.0.1, all in the `{data, meta:{request_id}}` / `{error}` envelopes):
+
+- `GET /health` → `{"status":"ok","model_available":false}`
+- `GET /v1/model/info` → `model_available: false`, `model_version: null`,
+  `baseline_version: null`, `contract_version: "1.0.1"`
+- `POST /v1/analyze` → **deterministic rule baseline** (`method: "rule"`,
+  rule `vacant-beyond-grace-v1`, finding type `vacant_but_on`): an eligible
+  device operated while its room was vacant beyond its vacancy grace.
+  Always-on exceptions are excluded; uncertain cases return warnings, not
+  invented waste. See [P010 evidence](docs/P010_ML_FOUNDATION_EVIDENCE.md)
+  for the complete request/response.
+- `POST /v1/forecast` → not implemented (404).
+
+**Model vs rule.** No trained model exists: `model_available` stays
+`false` and model versions stay `null`. `/v1/analyze` is a deterministic
+rule that needs no model, so it works and never returns
+`MODEL_UNAVAILABLE` merely because no model exists. It returns no
+probabilities and is not AI/ML. Future model-based analyses/forecasts will
+report `MODEL_UNAVAILABLE` until a validated model is loaded.
+
+**Request bounds.** Inline data only (no database, files or callbacks): at
+most 2,000 device intervals and 2,000 room intervals per request (else 413
+`REQUEST_TOO_LARGE`). For the 18-device office at one-minute resolution that
+is roughly 111 minutes per request — **not a whole month**. The auditor
+backend must window long periods and include preceding context so vacancy
+grace can be established at window starts.
 
 ## Setup (Python 3.13; no PowerShell execution-policy change needed)
 
@@ -62,5 +83,6 @@ Docs:
 - [Progress log](docs/PROGRESS_LOG.md)
 - [F1 evidence](docs/F1_EVIDENCE.md)
 - [F2-B evidence](docs/F2_B_EVIDENCE.md)
+- [P010 ML foundation evidence](docs/P010_ML_FOUNDATION_EVIDENCE.md)
 - [Data contract v1](contracts/v1/CONTRACT.md)
 - [Service interfaces](contracts/v1/API.md)
