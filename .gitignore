@@ -31,3 +31,6 @@ Thumbs.db
 
 # Locally generated model bundles and evaluation reports (P016; never committed).
 /artifacts/
+
+# Local release smoke-check reports (P029; `python -m app.smoke --json ...`).
+smoke-report*.json

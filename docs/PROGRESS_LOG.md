@@ -481,3 +481,46 @@ correction entry; do not rewrite history.
 - Live: trend finding (+29.7 %, 1.645 W/day) and insufficient_history
   responses; existing routes unchanged; model_available false.
 - Next action: commit + push; stop after P024. Review pending.
+
+---
+
+## 2026-09-25 02:03:36 +05:30 (IST) — Deployment port change + P024 outcome (recorded)
+
+- `a0a86cc` (mohan-madhu, "chore(deploy): fix Python service port 19003") is
+  the deployed Python baseline: the listener port is fixed at 19003 in source
+  (PORT ignored); README updated. P024 (`208417e`) completed, review pending.
+- Agent identities changed: this agent is now **M-C — Claude Code** (historical
+  label "Agent B" unchanged in older entries).
+
+---
+
+## 2026-09-25 02:03:36 +05:30 (IST) — P029-PREP started (actual)
+
+- Developer Mohan | M-C — Claude Code | P029-PREP (Python release verification).
+  Supporting Mohan release-readiness batch 28 / approximately 29.
+  Exclusive write scope: energy-ml-service.
+- Baseline `a0a86cc` == local origin/main ref, clean; no AGENTS.md; no
+  .gitattributes; no uv metadata/lock in the repo.
+- Constraints: no listener on 19003 (M-D FreeBuff may use it); in-process
+  checks only; no VPS execution; no API behaviour changes.
+- Next action: add a stdlib-only smoke runner (in-process ASGI + explicit
+  loopback HTTP), tests, .gitattributes, docs.
+
+---
+
+## 2026-09-25 02:20 +05:30 (IST) — P029-PREP completed (review pending)
+
+- Added `python -m app.smoke` (stdlib only; in-process ASGI default; explicit
+  loopback `--url`, public/non-loopback refused; bounded timeout, no retries,
+  no fallback). 11 checks; outcomes pass/fail/error/skip; exit 0/1/2;
+  `--json` report with summaries and returned versions, no payloads.
+- In-process result: 11 passed, exit 0 — contract 1.0.1, model_available
+  false, model_version null, baseline hourly-profile-median-v1, rules
+  vacant-beyond-grace-v1, detectors excess-power-mad-v1 /
+  gradual-power-trend-v1. Closed loopback port → ERROR + 10 SKIP, exit 2.
+- pytest 167/167 (153 + 14 new); pip check clean; check_env OK; verifier
+  75/75 (hashes unchanged). `.gitattributes` LF rules added.
+- Doc defect fixed: lost backslashes in Windows commands (README since
+  `22b0a08`, HANDOFF, P013 evidence). HANDOFF runtime updated to 19003.
+- Not verified: VPS service, Node integration of anomalies/drift, browsers,
+  deployment. No listener started; no VPS command run.

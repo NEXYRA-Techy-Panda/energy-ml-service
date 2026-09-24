@@ -198,7 +198,7 @@ environment/schedule assumptions give identical points.
 > total error. The calculation is unchanged and the numbers are identical; the
 > output now reports expected and scored hours.
 
-Measured output (`.venvScriptspython.exe scriptsevaluate_forecast_baseline.py`, relabelled in P016):
+Measured output (`.venv\Scripts\python.exe scripts\evaluate_forecast_baseline.py`, relabelled in P016):
 
 ```json
 {

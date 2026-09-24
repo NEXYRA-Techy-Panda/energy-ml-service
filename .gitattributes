@@ -1,0 +1,4 @@
+# Canonical contract files are hashed byte-for-byte (contracts/v1/MANIFEST.sha256);
+# keep them LF on every platform so Windows checkouts verify identically.
+contracts/v1/** text eol=lf
+scripts/verify-contract.mjs text eol=lf

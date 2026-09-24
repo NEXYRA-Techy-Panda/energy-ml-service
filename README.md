@@ -9,7 +9,7 @@ simulation and auditing project.
 - **Owner**: Mohan.
 - **Fixed port**: `19003`.
 
-## Status (P024, 2026-09-25)
+## Status (P029-PREP, 2026-09-25)
 
 Routes (contract 1.0.1, all in the `{data, meta:{request_id}}` / `{error}` envelopes):
 
@@ -86,12 +86,12 @@ model bundles, reports) are git-ignored and generated locally.
 Windows — call the venv's interpreter directly (no `Activate.ps1`):
 
 ```powershell
-& "C:UsersikramAppDataLocalProgramsPythonPython313python.exe" -m venv .venv   # or: py -3.13 -m venv .venv
-.venvScriptspython.exe -m pip install -r requirements-dev.txt   # runtime only: requirements.txt
-.venvScriptspython.exe scriptscheck_env.py                     # interpreter + imports
-.venvScriptspython.exe -m pip check
-.venvScriptspython.exe -m pytest -q
-.venvScriptspython.exe -m app                                    # http://127.0.0.1:19003
+& "C:\Users\vikram\AppData\Local\Programs\Python\Python313\python.exe" -m venv .venv   # or: py -3.13 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements-dev.txt   # runtime only: requirements.txt
+.venv\Scripts\python.exe scripts\check_env.py                     # interpreter + imports
+.venv\Scripts\python.exe -m pip check
+.venv\Scripts\python.exe -m pytest -q
+.venv\Scripts\python.exe -m app                                    # http://127.0.0.1:19003
 ```
 
 Linux (eventual VPS; not deployed):
@@ -104,6 +104,22 @@ HOST=127.0.0.1 .venv/bin/python -m app
 ```
 
 Checks: `curl http://localhost:19003/health`, `curl http://localhost:19003/v1/model/info`.
+
+### Release smoke check (P029-PREP)
+
+One command verifies the supported capabilities (health/model info, analyze,
+forecast, anomalies, drift, validation) and exits 0 / 1 (application failure)
+/ 2 (target unreachable or bad target):
+
+```powershell
+.venv\Scripts\python.exe -m app.smoke                               # in-process (default; no listener)
+.venv\Scripts\python.exe -m app.smoke --json smoke-report.json      # plus machine-readable report
+.venv\Scripts\python.exe -m app.smoke --url http://127.0.0.1:19003  # explicit loopback HTTP target only
+```
+
+On the VPS use the running service's existing interpreter (see
+[P029 evidence](docs/P029_PYTHON_RELEASE_READINESS_EVIDENCE.md) §4). Python
+checks do not cover Node integration, browsers or deployment.
 
 ## Configuration
 
@@ -133,5 +149,6 @@ Docs:
 - [P021 temporal boundary evidence](docs/P021_TEMPORAL_BOUNDARY_EVIDENCE.md)
 - [P022 excess-consumption detector evidence](docs/P022_EXCESS_CONSUMPTION_EVIDENCE.md)
 - [P024 gradual trend evidence](docs/P024_GRADUAL_TREND_EVIDENCE.md)
+- [P029 Python release-readiness evidence](docs/P029_PYTHON_RELEASE_READINESS_EVIDENCE.md)
 - [Data contract v1](contracts/v1/CONTRACT.md)
 - [Service interfaces](contracts/v1/API.md)

@@ -2,21 +2,20 @@
 
 ## Assignment / Layer ID
 
-Agent B — Claude Code | P024 | M5 — gradual consumption trend detection.
-Category: Mohan — Python analysis. Owner: Mohan.
+Developer Mohan | M-C — Claude Code | P029-PREP — Python release verification.
+Supporting Mohan release-readiness batch 28 / approximately 29.
 
 ## Scope
 
-(1) Correct P022's environmental-matching claim (wording only). (2) Additive
-POST /v1/drift: conservative sustained-upward-trend detector over
-comparable fully-on, context-normalised daily summaries (Theil–Sen), with
-explicit distinction of stable / gradual trend / spike / abrupt step /
-insufficient / unsupported. Not an efficiency diagnosis. Existing routes
-unchanged; model_available false. Frozen parameters: PROGRESS_LOG P024 start.
+Exclusive write: energy-ml-service. One repeatable smoke-check command
+(in-process default; explicit loopback HTTP mode) verifying health/model info,
+analyze, forecast, anomalies, drift and validation; .gitattributes LF rules;
+release-handoff documentation. No API behaviour change; no model work; no
+listener on 19003; no VPS execution.
 
 ## Task status
 
-completed (implementation); review pending
+completed
 
 ## Review status
 
@@ -24,34 +23,39 @@ pending
 
 ## Previous task outcome (preserved)
 
-P022 accepted based on supplied evidence for its narrow scope (`b17e54b`).
+P024 completed (`208417e`), review pending; deployment commit `a0a86cc` fixed
+the port at 19003.
 
 ## Current branch
 
-`main` at `b17e54be0f22c9f3441e08bd08400e7cbb138b4f` (== origin/main, clean).
+`main` (base `a0a86cc5d96b16082d8a1d1b911de7a7d1b2474d`).
 
 ## Last checkpoint timestamp, including timezone
 
-2026-09-25 00:27:50 +05:30 (IST) — P024 completed; committing + pushing.
+2026-09-25 02:20 +05:30 (IST) — P029-PREP implementation and verification complete.
 
 ## Completed work
 
-1. Design frozen and logged; P022 wording corrected (docs + docstring; behaviour unchanged).
-2. app/drift/{constants,detector,service,synthetic}.py; POST /v1/drift; parse_anomaly_request takes detector version (default unchanged).
-3. Development fix before held-out run: step location = L1 changepoint (thresholds unchanged; logged).
-4. tests/test_drift.py (23); full suite 153 passed; pip check clean; check_env OK; verifier 75/75.
-5. Held-out synthetic diagnostic (seeds 9001–9020): TP 11, FP 0, FN 0; all steps/offsets/spikes classified as designed.
-6. Live 127.0.0.1:8000: trend 200, insufficient 200; anomalies/analyze/forecast/health unchanged; processes stopped.
-7. Docs: P024 evidence, P022 correction, README, HANDOFF, PROGRESS_LOG.
+1. Startup; baseline and constraints recorded.
+2. `app/smoke.py` (`python -m app.smoke`): 11 checks, in-process / explicit
+   loopback HTTP, pass/fail/error/skip, exit 0/1/2, `--json` summary report.
+3. `tests/test_smoke.py` (14 tests); `.gitattributes` LF rules; `.gitignore`
+   for local smoke reports.
+4. Results: in-process 11/11 pass; pytest 167/167; pip check clean;
+   check_env OK; verifier 75/75. No application defect found.
+5. Docs: P029 evidence, README, HANDOFF (19003 runtime; stale 8000 marked
+   historical); Windows command paths restored in README/HANDOFF/P013.
 
 ## Exact next action
 
-Commit + push, verify remote hash. Then STOP. Next: auditor-backend (Codex) may integrate POST /v1/drift per the P024 evidence integration section.
+None for M-C: P029-PREP stops here. Reviewer: run `python -m app.smoke` on the
+VPS with the service's existing interpreter (in-process, then `--url
+http://127.0.0.1:19003`) and record the fields in P029 evidence §8.
 
-## Processes started by Agent B
+## Processes started by M-C
 
-Python service (launcher 8684 → interpreter 9644) on 127.0.0.1:8000 — stopped; none left running.
+None (no listener started; in-process only).
 
 ## Commit reference
 
-Base: `b17e54b`. P024: the commit containing this file (hash in the P024 return report).
+Base: `a0a86cc`. P029-PREP: see PROGRESS_LOG (commit hash recorded after push).

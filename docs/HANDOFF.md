@@ -2,9 +2,11 @@
 
 ## 0. Continuity and current layer (F0.1, 2026-09-24)
 
-- Current layer: **P024 / M5 gradual consumption trend detection** —
-  implementation completed, review **pending** (P022 accepted for its narrow
-  scope). Contract: **1.0.1 defined** (canonical
+- Current layer: **P029-PREP Python release verification** (Developer Mohan |
+  M-C — Claude Code) — completed, review **pending**. Previous: P024 / M5
+  gradual trend detection completed, review pending (P022 accepted for its
+  narrow scope). Runtime: port fixed at **19003** since `a0a86cc` (PORT
+  ignored); older "8000" mentions below are historical. Contract: **1.0.1 defined** (canonical
   `simulation-backend/contracts/v1/`, mirrored to siblings; replaces the
   unaccepted 1.0.0 prototype, no backward compatibility claimed).
 - Continuity files: [ACTIVE_TASK.md](ACTIVE_TASK.md) and [PROGRESS_LOG.md](PROGRESS_LOG.md).
@@ -74,8 +76,8 @@
   repro freeze identical, live check on http://localhost:8000 passed, and the
   process was stopped.
   Commands (Windows, no execution-policy change):
-  `.venvScriptspython.exe -m pip install -r requirements-dev.txt`,
-  `.venvScriptspython.exe -m pytest -q`, `.venvScriptspython.exe -m app`.
+  `.venv\Scripts\python.exe -m pip install -r requirements-dev.txt`,
+  `.venv\Scripts\python.exe -m pytest -q`, `.venv\Scripts\python.exe -m app`.
   Linux: `.venv/bin/python -m app`. Env names: HOST (127.0.0.1), PORT (8000).
   Windows Smart App Control blocked a pandas extension until Mohan changed the
   setting (see evidence). Deliberately not implemented: /v1/analyze,
@@ -158,6 +160,20 @@
   designed (idealised synthetic; not real performance). Existing routes
   unchanged; model_available false. Evidence:
   [P024_GRADUAL_TREND_EVIDENCE.md](P024_GRADUAL_TREND_EVIDENCE.md).
+- Deployment note (2026-09-25): `a0a86cc` (mohan-madhu) fixed the listener
+  port at 19003 in source; PM2 process `nexyra-energy-ml`, private (no Nginx
+  route). This is the deployed Python baseline as recorded by the assignment.
+- P029-PREP addendum (2026-09-25, M-C — Claude Code, completed, review
+  **pending**): `python -m app.smoke` release smoke check — in-process by
+  default (real ASGI app, no listener) or explicit loopback `--url` (public or
+  non-loopback URLs refused); 11 checks over health/model info, analyze,
+  forecast, anomalies, drift and validation; pass/fail/error/skip kept
+  separate; exit 0/1/2; optional `--json` summary report without payloads;
+  standard library only. `.gitattributes` adds LF rules for `contracts/v1/**`
+  and `scripts/verify-contract.mjs` (hashes unchanged). No API/model change.
+  In-process 11/11 pass; pytest 167/167; verifier 75/75. VPS, Node
+  integration and browsers not verified by this task. Evidence:
+  [P029_PYTHON_RELEASE_READINESS_EVIDENCE.md](P029_PYTHON_RELEASE_READINESS_EVIDENCE.md).
 
 ## 1. Purpose and owner
 
@@ -220,7 +236,14 @@ None. Empty repository; nothing to preserve.
 
 ## 7. Actual run/check commands, if implemented
 
-No app commands exist. F0 checks:
+Current (2026-09-25): see README "Setup" and "Release smoke check". Windows:
+`.venv\Scripts\python.exe -m pytest -q`, `.venv\Scripts\python.exe -m app`
+(http://127.0.0.1:19003), `.venv\Scripts\python.exe -m app.smoke`
+(in-process), `node scripts/verify-contract.mjs`. VPS: the running service's
+existing interpreter with `-m app.smoke` (P029 evidence §4); do not start a
+second listener on 19003.
+
+Historical F0 checks (superseded):
 
 ```powershell
 git -C energy-ml-service rev-parse --show-toplevel
@@ -240,7 +263,10 @@ runtimes during F0.
 
 ## 8. Configuration names without secret values
 
-Proposed only (no `.env` at F0):
+Current: `HOST` (default `127.0.0.1`, from env or local `.env`); the port is
+fixed at `19003` in `app/config.py` and `PORT` is ignored. No secrets.
+
+Historical F0 proposal (superseded):
 
 - `PORT` / `HOST` → `8000` / localhost (F2/F4 finalise; e.g. `uvicorn` host/port).
 - Any API keys/auth between auditor-backend and Python to be defined in F1/F4
