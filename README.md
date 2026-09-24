@@ -7,7 +7,7 @@ simulation and auditing project.
   by `auditor-backend` for analytics support, anomaly detection, and
   next-day/week/month forecasts plus comparison support.
 - **Owner**: Mohan.
-- **Local port**: `8000`.
+- **Fixed port**: `19003`.
 
 ## Status (P024, 2026-09-25)
 
@@ -91,7 +91,7 @@ Windows — call the venv's interpreter directly (no `Activate.ps1`):
 .venvScriptspython.exe scriptscheck_env.py                     # interpreter + imports
 .venvScriptspython.exe -m pip check
 .venvScriptspython.exe -m pytest -q
-.venvScriptspython.exe -m app                                    # http://127.0.0.1:8000
+.venvScriptspython.exe -m app                                    # http://127.0.0.1:19003
 ```
 
 Linux (eventual VPS; not deployed):
@@ -99,17 +99,18 @@ Linux (eventual VPS; not deployed):
 ```sh
 python3.13 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
-HOST=127.0.0.1 PORT=8000 .venv/bin/python -m app
-# equivalent: .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+HOST=127.0.0.1 .venv/bin/python -m app
+# Equivalent explicit ASGI command: .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 19003
 ```
 
-Checks: `curl http://localhost:8000/health`, `curl http://localhost:8000/v1/model/info`.
+Checks: `curl http://localhost:19003/health`, `curl http://localhost:19003/v1/model/info`.
 
 ## Configuration
 
-`HOST` (default 127.0.0.1) and `PORT` (default 8000), read by `python -m app`
-from the environment or a local `.env` (see `.env.example`; `.env` is
-git-ignored). The service is private: only `auditor-backend` calls it (via its
+`HOST` defaults to `127.0.0.1` and may be read from the environment or a local
+`.env` (see `.env.example`; `.env` is git-ignored). The production HTTP port
+is fixed in source at `19003`; `PORT` is intentionally ignored. The service is
+private: only `auditor-backend` calls it (via its
 `ML_SERVICE_URL`, from F4); browsers never do. Keep it bound to 127.0.0.1.
 
 Windows note: if pandas fails with "An Application Control policy has blocked

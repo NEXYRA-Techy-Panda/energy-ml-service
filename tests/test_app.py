@@ -37,11 +37,10 @@ def test_unimplemented_routes_return_not_found_envelope(path):
     assert res.json() == {"error": {"code": "NOT_FOUND", "message": f"No route for {res.request.method} {path}"}}
 
 
-def test_settings_defaults_and_validation(monkeypatch):
+def test_settings_use_fixed_port_and_ignore_port_environment(monkeypatch):
     monkeypatch.delenv("HOST", raising=False)
     monkeypatch.delenv("PORT", raising=False)
     settings = load_settings()
-    assert (settings.host, settings.port) == ("127.0.0.1", 8000)
+    assert (settings.host, settings.port) == ("127.0.0.1", 19003)
     monkeypatch.setenv("PORT", "eighty")
-    with pytest.raises(ValueError):
-        load_settings()
+    assert load_settings().port == 19003

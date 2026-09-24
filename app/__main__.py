@@ -1,4 +1,4 @@
-"""Entrypoint: python -m app (reads HOST/PORT; Ctrl+C / SIGTERM shut down gracefully via uvicorn)."""
+"""Entrypoint: python -m app (fixed port 19003; reads HOST; graceful shutdown)."""
 
 import uvicorn
 
