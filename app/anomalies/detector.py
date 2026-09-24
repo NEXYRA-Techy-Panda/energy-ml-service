@@ -13,8 +13,9 @@ Comparability (MVP):
 - comfort-dependent equipment (ac, refrigerator): reference intervals must
   also have room temperature within ±TEMP_BAND_C and occupancy_avg within
   ±OCCUPANCY_BAND of the evaluated interval's room; without room context the
-  interval is excluded (unsupported context). A temperature or occupancy
-  change alone therefore never produces a finding;
+  interval is excluded (unsupported context). Matching observed context
+  reduces confounding but does not eliminate unmeasured differences such as
+  outdoor temperature, setpoint or workload;
 - policy versions change WHEN a device runs, not its fully-on power, so they
   are not a comparability factor (policy refs are reported as evidence).
 

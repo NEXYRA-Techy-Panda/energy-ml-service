@@ -42,7 +42,8 @@ def _reject_constant(name: str) -> float:
     raise ValueError(f"non-finite number {name} is not allowed")
 
 
-def parse_anomaly_request(raw: bytes) -> ParsedAnomalyRequest:
+def parse_anomaly_request(raw: bytes, detector_version: str = DETECTOR_VERSION) -> ParsedAnomalyRequest:
+    """Shared by /v1/anomalies (default version) and /v1/drift (its own version)."""
     if len(raw) > MAX_BODY_BYTES:
         raise ApiError(413, "REQUEST_TOO_LARGE", f"Request body exceeds {MAX_BODY_BYTES} bytes")
     try:
@@ -77,8 +78,8 @@ def parse_anomaly_request(raw: bytes) -> ParsedAnomalyRequest:
     except ValidationError as exc:
         first = exc.errors()[0]
         raise ApiError(400, "VALIDATION_ERROR", first["msg"], _loc(first["loc"]) or None) from None
-    if req.detector is not None and req.detector.version != DETECTOR_VERSION:
-        raise ApiError(400, "VALIDATION_ERROR", f"detector.version {req.detector.version!r} is not available (use {DETECTOR_VERSION!r})", "detector.version")
+    if req.detector is not None and req.detector.version != detector_version:
+        raise ApiError(400, "VALIDATION_ERROR", f"detector.version {req.detector.version!r} is not available (use {detector_version!r})", "detector.version")
 
     ref_end = epoch(req.reference.window.end_utc, "reference.window.end_utc")
     eval_start = epoch(req.evaluation.window.start_utc, "evaluation.window.start_utc")

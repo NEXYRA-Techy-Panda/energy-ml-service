@@ -9,7 +9,7 @@ simulation and auditing project.
 - **Owner**: Mohan.
 - **Local port**: `8000`.
 
-## Status (P022, 2026-09-24)
+## Status (P024, 2026-09-25)
 
 Routes (contract 1.0.1, all in the `{data, meta:{request_id}}` / `{error}` envelopes):
 
@@ -40,6 +40,17 @@ Routes (contract 1.0.1, all in the `{data, meta:{request_id}}` / `{error}` envel
   statuses + coverage + exclusions; not a malfunction diagnosis; no drift
   detection. ≤ 2,000 device + 2,000 room intervals per section, body ≤ 16 MiB.
   See [P022 evidence](docs/P022_EXCESS_CONSUMPTION_EVIDENCE.md).
+
+- `POST /v1/drift` → **gradual upward power-trend detector** (additive P024
+  extension; `detector_version: "gradual-power-trend-v1"`, `method: "rule"`,
+  `technique: "theil_sen_context_normalised_daily"`): same request structure
+  and limits as `/v1/anomalies`; context-normalised daily summaries of
+  comparable fully-on observations (reference ≥ 5 days over ≥ 7; evaluation
+  ≥ 10 days over ≥ 14 with ≥ 50 % coverage); Theil–Sen trend ≥ 10 % and
+  ≥ 10 W with persistence → "Sustained upward power trend under matched
+  observed conditions"; steps, offsets and spikes are described separately.
+  Not an efficiency or fault diagnosis. See
+  [P024 evidence](docs/P024_GRADUAL_TREND_EVIDENCE.md).
 
 **Model vs baseline vs rule.** No trained model exists: `model_available`
 stays `false` and `model_version` stays `null`. The analysis rule and the
@@ -120,5 +131,6 @@ Docs:
 - [P016 trained forecast candidate evidence](docs/P016_TRAINED_FORECAST_CANDIDATE_EVIDENCE.md)
 - [P021 temporal boundary evidence](docs/P021_TEMPORAL_BOUNDARY_EVIDENCE.md)
 - [P022 excess-consumption detector evidence](docs/P022_EXCESS_CONSUMPTION_EVIDENCE.md)
+- [P024 gradual trend evidence](docs/P024_GRADUAL_TREND_EVIDENCE.md)
 - [Data contract v1](contracts/v1/CONTRACT.md)
 - [Service interfaces](contracts/v1/API.md)

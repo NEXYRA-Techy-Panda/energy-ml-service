@@ -1,5 +1,11 @@
 # P022_EXCESS_CONSUMPTION_EVIDENCE — excess-consumption deviation detector (M4)
 
+> **Correction (P024, 2026-09-25).** Earlier wording said a temperature or
+> occupancy change alone "never" produces a finding. That overstated it.
+> Matching observed room temperature and occupancy reduces confounding, but it
+> does not eliminate unmeasured differences such as outdoor temperature,
+> setpoint or workload. Detector behaviour is unchanged.
+
 Agent B — Claude Code | P022 | M4. Owner Mohan. Date 2026-09-24. Scope:
 `energy-ml-service` only. Implementation is **completed**; review is
 **pending**. The commit hash is reported in the P022 return report after the
@@ -86,8 +92,10 @@ existing envelopes: success `{data, meta:{request_id}}` and error
      the device status is `unsupported_context`.
    - If there are too few comparable conditions, the result is
      `insufficient_reference` with the reason.
-   - A temperature or occupancy change alone therefore **never** produces a
-     finding.
+   - Matching observed context **reduces confounding but does not eliminate
+     unmeasured differences** such as outdoor temperature, setpoint or
+     workload. A hotter or busier room can still produce a finding when such
+     unobserved factors differ (P024 correction; detector unchanged).
 6. **Policy versions** change *when* a device runs, not its fully-on power,
    so they are not a comparability factor. Policy refs are still reported as
    evidence.
@@ -778,7 +786,8 @@ findings" is never ambiguous.
   72 W light, about 9 W on a 150 W fridge, about 58 W on 960 W workstations)
   is below the fixed floor of max(10 W, 10 %) plus 4 robust σ. This is
   expected **by design**, not a bug.
-- **No false alarms** on these synthetic cases from:
+- **No false alarms** on these synthetic cases (where context was fully
+  observed by construction; real rooms have unobserved factors) from:
   - the heat-spell AC (conditional comparison);
   - reference spikes (the median is robust);
   - on/off switching;

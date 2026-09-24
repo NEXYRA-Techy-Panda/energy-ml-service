@@ -2,8 +2,9 @@
 
 ## 0. Continuity and current layer (F0.1, 2026-09-24)
 
-- Current layer: **P022 / M4 excess-consumption detection** — implementation
-  completed, review **pending** (P021 accepted based on supplied evidence). Contract: **1.0.1 defined** (canonical
+- Current layer: **P024 / M5 gradual consumption trend detection** —
+  implementation completed, review **pending** (P022 accepted for its narrow
+  scope). Contract: **1.0.1 defined** (canonical
   `simulation-backend/contracts/v1/`, mirrored to siblings; replaces the
   unaccepted 1.0.0 prototype, no backward compatibility claimed).
 - Continuity files: [ACTIVE_TASK.md](ACTIVE_TASK.md) and [PROGRESS_LOG.md](PROGRESS_LOG.md).
@@ -144,6 +145,19 @@
   below floor by design). /v1/analyze and /v1/forecast unchanged;
   model_available false. Evidence:
   [P022_EXCESS_CONSUMPTION_EVIDENCE.md](P022_EXCESS_CONSUMPTION_EVIDENCE.md).
+- P024 / M5 addendum (2026-09-25, Agent B — Claude Code, implementation
+  completed, review **pending**): P022 wording corrected (context matching
+  reduces but does not eliminate confounding; behaviour unchanged). Additive
+  POST /v1/drift (gradual-power-trend-v1): comparable fully-on,
+  same-resolution, same-configuration observations normalised by
+  reference context medians (local hour; temperature bin + occupancy for
+  comfort equipment); supported daily summaries; Theil–Sen trend with
+  practical thresholds and persistence; steps/offsets/spikes distinguished;
+  explicit statuses/coverage; no efficiency/fault/savings claims. Tests
+  153/153; held-out synthetic seeds 9001–9020: 80/80 series classified as
+  designed (idealised synthetic; not real performance). Existing routes
+  unchanged; model_available false. Evidence:
+  [P024_GRADUAL_TREND_EVIDENCE.md](P024_GRADUAL_TREND_EVIDENCE.md).
 
 ## 1. Purpose and owner
 

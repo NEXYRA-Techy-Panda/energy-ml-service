@@ -416,3 +416,68 @@ correction entry; do not rewrite history.
   0.6444; strong 0.9667, subtle 0.0 by design); live finding + insufficient
   responses; analyze/forecast unchanged; model_available false.
 - Next action: commit + push; stop after P022. Review pending.
+
+---
+
+## 2026-09-25 00:18:56 +05:30 (IST) — P022 accepted (recorded)
+
+- P022 (`b17e54be0f22c9f3441e08bd08400e7cbb138b4f`) accepted based on supplied
+  evidence for its stated narrow scope.
+
+---
+
+## 2026-09-25 00:18:56 +05:30 (IST) — P024 / M5 started (actual)
+
+- Agent B — Claude Code | P024 | M5 (gradual consumption trend detection).
+  Category: Mohan — Python analysis. Exclusive write scope: energy-ml-service.
+- Baseline `b17e54b` == origin/main, clean; no AGENTS.md; port 8000 free.
+- Frozen design (fixed before implementation and evaluation):
+  - Additive POST /v1/drift reusing the P022 request structure
+    ("drift-request-v1": reference + evaluation sections, same bounds
+    2000/2000 per section, 16 MiB body, reference ends before evaluation).
+  - Comparable observations: fully-on, non-partial, one resolution per
+    device (most common reference interval_seconds), same policy_ref as the
+    reference's dominant policy_ref (else excluded "policy_changed").
+  - Context normalisation: each observation's power / its reference context
+    median; context = local hour (Asia/Kolkata) for ordinary devices;
+    (1 °C temperature bin, occupied yes/no) for comfort-dependent ac /
+    refrigerator. A context baseline needs >= 3 distinct reference days.
+  - Supported day (local date): >= 3 comparable observations and >= 1 h of
+    fully-on comparable time; daily value = median normalised ratio.
+  - Reference: >= 5 supported days spanning >= 7 days. Evaluation: >= 10
+    supported days spanning >= 14 days with supported/calendar days >= 0.5.
+  - Trend: Theil–Sen median pairwise slope of daily ratios vs actual elapsed
+    days. Finding needs total change over the evaluation span >= 10 % AND
+    >= 10 W (× reference level), persistence = chronological thirds' medians
+    strictly increasing AND >= 75 % of final-third days >= 1.05.
+  - Step: best split (>= 3 days each side) with level change >= 10 % and
+    within-segment Theil–Sen change <= 3 % on both sides → abrupt level
+    change (not a gradual finding). Elevated flat level (median ratio >= 1.10,
+    |trend| < 10 %) → level offset without trend. Isolated spike days
+    (ratio >= 1.25) reported, never a trend.
+- P022 wording correction scheduled (docs + docstring only).
+- Next action: correct P022 wording; implement app/drift; tests; evaluation.
+
+---
+
+## 2026-09-25 00:21:51 +05:30 (IST) — P024 development fix (before held-out evaluation)
+
+- Development case (seed 1, not a held-out seed): a pure +30 % step on ac-a was
+  classified as a sustained trend. Cause: "best split" chose the largest median
+  jump, which is not unique (a split at day 3 gives the same jump but contains
+  the step). Fix: best split = L1 changepoint (minimum total absolute
+  deviation from segment medians). All frozen thresholds unchanged.
+
+---
+
+## 2026-09-25 00:27:50 +05:30 (IST) — P024 / M5 completed (actual)
+
+- POST /v1/drift (additive, gradual-power-trend-v1) implemented; P022 wording
+  corrected. Tests 153 passed; pip check clean; check_env OK; verifier 75/75.
+- Held-out synthetic diagnostic (seeds 9001–9020, 80 series): TP 11, FP 0,
+  FN 0; steps → abrupt_level_change 17/17, offsets → level_offset 16/16,
+  spikes 11/11 and small 5/5 → stable, stable 20/20. Idealised synthetic
+  data; not real-building performance.
+- Live: trend finding (+29.7 %, 1.645 W/day) and insufficient_history
+  responses; existing routes unchanged; model_available false.
+- Next action: commit + push; stop after P024. Review pending.

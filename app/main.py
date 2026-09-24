@@ -17,6 +17,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .analysis.service import analyze
 from .anomalies.service import run_anomalies
+from .drift.service import run_drift
 from .config import CONTRACT_VERSION
 from .forecast.constants import BASELINE_VERSION
 from .forecast.service import run_forecast
@@ -111,3 +112,9 @@ async def forecast_route(request: Request) -> dict:
 async def anomalies_route(request: Request) -> dict:
     # Additive P022 extension: excess-consumption deviation vs earlier comparable reference (statistical; no model).
     return envelope(request, run_anomalies(await request.body()))
+
+
+@app.post("/v1/drift")
+async def drift_route(request: Request) -> dict:
+    # Additive P024 extension: sustained upward power trend under matched observed conditions (statistical; no model).
+    return envelope(request, run_drift(await request.body()))
