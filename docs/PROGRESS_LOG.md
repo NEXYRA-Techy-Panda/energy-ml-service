@@ -166,3 +166,47 @@ correction entry; do not rewrite history.
 - Startup: no AGENTS.md; clean tree; fetch clean; repo-local identity present.
 - Next action: corrections authored in `simulation-backend`, mirrored here.
 - Review status: pending.
+---
+
+## 2026-09-24 19:20:00 +05:30 (IST) — F2-B started (actual)
+
+- Layer ID: F2-B (backend application foundations), Agent B, developer Mohan.
+- Previous outcome preserved: F1-R2 completed + pushed at `a585d1aa792aacfe3711c33f53a44275bb2f0b98`;
+  accepted by the architecture lead based on supplied evidence. Contract
+  1.0.1 is the implementation baseline and is read-only during F2-B.
+- Startup: no AGENTS.md; clean tree; origin in sync; verifier 75/75.
+- Ownership: Agent B owns the three backend repos only; Agent A owns the
+  frontends concurrently.
+- Next action: scaffold, install, verify, document, commit + push.
+- Review status: pending.
+
+---
+
+## 2026-09-24 19:35:36 +05:30 (IST) — F2-B checkpoint (actual)
+
+- Node backends scaffolded; verify:contract 75/75, validate:schema 24/24
+  (Ajv 8.20.0, Draft 2020-12 strict), typecheck/lint/test/build exit 0.
+- energy-ml-service .venv created (Python 3.13.15); pinned requirements;
+  pip check clean; pytest 8 passed; fresh-venv repro install freeze identical.
+- Environment incident: pandas import initially failed —
+  "DLL load failed while importing parsing: An Application Control policy has
+  blocked this file" (Windows Smart App Control). Mohan changed the Windows
+  setting; re-test: numpy/scipy/scikit-learn/pandas import OK,
+  scripts/check_env.py exit 0. No workaround in code.
+- Next action: live HTTP checks on 4000/4001/8000, docs, commit + push.
+
+---
+
+## 2026-09-24 19:39:10 +05:30 (IST) — F2-B completed (actual)
+
+- Layer ID: F2-B. Task status: implementation completed; review pending
+  (never self-assigned).
+- Results: verify-contract 75/75; check_env exit 0 (Python 3.13.15 venv, imports OK); pip check clean; pytest 8 passed; fresh-venv repro identical; live GET http://localhost:8000/health and /v1/model/info → 200 uninitialised envelopes; /v1/analyze 404.
+- Live processes started by Agent B were stopped; none left running.
+- Contract unchanged; ambiguities reported in docs/F2_B_EVIDENCE.md
+  (CONTRACT.md §1 still says schema_version "1.0.0"; INTERNAL_ERROR code;
+  Python envelope; model/info uninitialised shape).
+- Deliberately not implemented: DB, simulation, uploads, interservice calls,
+  training, deployment.
+- Next action: commit + push, verify remote; next layer F3 pending its prompt.
+- Commit references: F2-B hash recorded in the F2-B return report.

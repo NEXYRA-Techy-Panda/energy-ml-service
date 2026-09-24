@@ -1,0 +1,10 @@
+[project]
+name = "energy-ml-service"
+version = "0.1.0"
+description = "NEXYRA energy analysis and inference service (F2 scaffold: health and model-info only)."
+requires-python = ">=3.13,<3.14"
+# Exact pins live in requirements.txt / requirements-dev.txt.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

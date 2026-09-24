@@ -2,8 +2,8 @@
 
 ## 0. Continuity and current layer (F0.1, 2026-09-24)
 
-- Current layer: **F1-R2** (contract v1.0.1 corrections) — status
-  **completed**, review **pending**. Contract: **1.0.1 defined** (canonical
+- Current layer: **F2-B** (backend application scaffold) — status
+  **completed**, review **pending** (F1-R2 accepted based on supplied evidence). Contract: **1.0.1 defined** (canonical
   `simulation-backend/contracts/v1/`, mirrored to siblings; replaces the
   unaccepted 1.0.0 prototype, no backward compatibility claimed).
 - Continuity files: [ACTIVE_TASK.md](ACTIVE_TASK.md) and [PROGRESS_LOG.md](PROGRESS_LOG.md).
@@ -56,6 +56,30 @@
   kind-specific closed policy rules, persist-until-cleared overrides, concrete
   Python A/B requests with bounds, full API paths + scaffold health states.
   75/75 in all five repos; CSV-alone parity unchanged. History preserved.
+- F2-B addendum (2026-09-24, implementation completed, review **pending**):
+  F1-R2 (contract 1.0.1) was accepted by the architecture lead based on
+  supplied evidence. Contract 1.0.1 is the baseline, and `contracts/v1` + the
+  verifier were left unmodified (verifier 75/75).
+  Full evidence: [F2_B_EVIDENCE.md](F2_B_EVIDENCE.md).
+  Implemented: FastAPI 0.141.1 + uvicorn 0.53.0 on Python 3.13.15, in an
+  isolated `.venv` (pip 26.2.1). pandas 3.0.6, numpy 2.5.3, scikit-learn
+  1.9.1 and scipy 1.18.1 are installed to verify the ML environment. Exact
+  pins are in `requirements.txt` and `requirements-dev.txt` (pytest 9.1.1,
+  httpx 0.28.1). Routes: `GET /health` → `{"status":"ok","model_available":false}`
+  and `GET /v1/model/info` → `{"model_available":false,"model_version":null,
+  "baseline_version":null,"contract_version":"1.0.1"}`, both inside
+  `{data,meta}`.
+  Checks: check_env exit 0, pip check clean, pytest 8 passed, fresh-venv
+  repro freeze identical, live check on http://localhost:8000 passed, and the
+  process was stopped.
+  Commands (Windows, no execution-policy change):
+  `.venvScriptspython.exe -m pip install -r requirements-dev.txt`,
+  `.venvScriptspython.exe -m pytest -q`, `.venvScriptspython.exe -m app`.
+  Linux: `.venv/bin/python -m app`. Env names: HOST (127.0.0.1), PORT (8000).
+  Windows Smart App Control blocked a pandas extension until Mohan changed the
+  setting (see evidence). Deliberately not implemented: /v1/analyze,
+  /v1/forecast, model training/loading, CUDA/deep learning, deployment. Next
+  layer: **F3**, pending its assigned prompt.
 
 ## 1. Purpose and owner
 
