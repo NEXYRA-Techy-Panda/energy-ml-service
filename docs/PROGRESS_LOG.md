@@ -338,3 +338,38 @@ correction entry; do not rewrite history.
   model_available false; API unchanged.
 - Verification: pytest 103 passed; pip check clean; check_env OK; verifier 75/75.
 - Next action: commit + push; stop after P016. Review pending.
+
+---
+
+## 2026-09-24 22:15:25 +05:30 (IST) — P016 review position (recorded)
+
+- Offline implementation accepted based on supplied evidence. Candidate NOT
+  approved for production. Temporal evaluation correctness pending P021.
+
+---
+
+## 2026-09-24 22:15:25 +05:30 (IST) — P021 / M2-R1 started (actual)
+
+- Agent B — Claude Code | P021 | M2-R1 (temporal evaluation correctness).
+  Category: Mohan — Python ML. Exclusive write scope: energy-ml-service.
+- Baseline `677d1a0` == origin/main, clean; no AGENTS.md.
+- Scope: audit TARGET boundaries (not only origins) for initial fit,
+  validation/selection, final refit and test, all three horizons; fix only if
+  a defect exists. No tuning, no new model, no promotion. P013 stays
+  production.
+- Next action: add optional, behaviour-neutral tracing of actual examples;
+  run a boundary audit on one series; add missing regression tests.
+
+---
+
+## 2026-09-24 22:22:18 +05:30 (IST) — P021 / M2-R1 completed (actual)
+
+- No boundary defect. Traced actual examples (trend_regime seed 101): initial
+  fit latest target end 2026-07-12T18:30:00Z = cutoff;
+  validation latest end 2026-09-20T18:30:00Z = test start; final refit latest end
+  2026-09-20T18:30:00Z; month origins crossing a window end excluded; all invariants true.
+- Added trace hooks (default off), audit script, 3 regression tests; 106 passed;
+  pip check clean; verifier 75/75. P016 suite not rerun (numbers unaffected).
+- P016 metrics remain valid (diagnostic); promotion criteria were an agent
+  proposal; no promotion. Production unchanged.
+- Next action: commit + push; stop after P021. Review pending.

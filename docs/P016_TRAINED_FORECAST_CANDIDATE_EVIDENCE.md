@@ -14,6 +14,17 @@ push.
 >
 > Synthetic results say nothing about real-building accuracy.
 
+> **Clarification (P021, 2026-09-24).**
+> - **Boundaries:** a traced audit of the actual examples confirmed that no
+>   initial fit, validation/selection or final refit used a target ending
+>   after its cutoff (next-calendar-month horizons included). The results
+>   below therefore **remain valid as reported**. See
+>   [P021_TEMPORAL_BOUNDARY_EVIDENCE.md](P021_TEMPORAL_BOUNDARY_EVIDENCE.md).
+> - **Diagnostic only:** the test outcomes were inspected during P016, so
+>   they are diagnostic, not an untouched confirmation set.
+> - **Promotion criteria:** the criteria proposed in section 10 were an agent
+>   proposal, not an agreed acceptance gate. No promotion is authorised.
+
 ## Starting state
 
 - No `AGENTS.md`. `main` was at `7f71363` (P013, accepted as a statistical
@@ -456,7 +467,8 @@ calendar-month horizon on the seasonal pattern.
 3. **Add real evidence.** Once simulator history/export and the auditor
    export exist, evaluate on real exports (non-synthetic provenance) with a
    temporal holdout from a later period than any design work.
-4. **Promotion criteria**, proposed and to be agreed beforehand:
+4. **Promotion criteria** (agent proposal only; P021 clarification: not an
+   agreed gate), to be agreed beforehand:
    - lower MAE than the baseline on every scenario and horizon on fresh
      holdouts;
    - no cell worse than the baseline by more than 10 %;

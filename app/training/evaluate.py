@@ -103,7 +103,9 @@ def make_predictors(series: TrainingSeries, candidate: Candidate | None) -> dict
     return predictors
 
 
-def evaluate_window(series: TrainingSeries, a: datetime, b: datetime, predictors: dict[str, Predictor]) -> dict:
+def evaluate_window(series: TrainingSeries, a: datetime, b: datetime, predictors: dict[str, Predictor],
+                    trace: list | None = None) -> dict:
+    """`trace` (optional, audit only) receives (horizon, origin, horizon_end, eligible, scored target starts)."""
     tz = series.tz
     report = {}
     for horizon in HORIZONS:
@@ -128,6 +130,8 @@ def evaluate_window(series: TrainingSeries, a: datetime, b: datetime, predictors
                     ok = False
                 seconds[m] += time.perf_counter() - t0
             if not ok:
+                if trace is not None:
+                    trace.append((horizon, o, horizon_bounds(horizon, o, tz).end, False, []))
                 continue
             eligible += 1
             expected_eligible += len(hours)
@@ -135,6 +139,8 @@ def evaluate_window(series: TrainingSeries, a: datetime, b: datetime, predictors
             observed += len(actual)
             common = [t for t in actual if all(t in p for p in preds.values())]
             scored += len(common)
+            if trace is not None:
+                trace.append((horizon, o, horizon_bounds(horizon, o, tz).end, True, common))
             for m, p in preds.items():
                 errors = [p[t] - actual[t] for t in common]
                 abs_err[m] += sum(abs(e) for e in errors)
@@ -169,15 +175,22 @@ def _selection_score(window_report: dict) -> float | None:
 
 
 def run_experiment(series: TrainingSeries, seed: int, params_override: dict | None = None,
-                   configs: tuple[str, ...] | None = None) -> tuple[dict, Candidate]:
+                   configs: tuple[str, ...] | None = None, trace: dict | None = None) -> tuple[dict, Candidate]:
+    """`trace` (optional, audit only) collects the actual examples of every phase:
+    fit_initial[config], validation[config], fit_final, test."""
     splits = splits_for(series)
     names = configs or tuple(CONFIGS)
+    t = trace if trace is not None else None
+    if t is not None:
+        t.update({"fit_initial": {}, "validation": {}, "fit_final": [], "test": []})
 
     # 1) Validation-based selection (models see only hours ending <= train_end).
     validation = {}
     for name in names:
-        cand = train(series, splits.train_end, name, seed, params_override)
-        rep = evaluate_window(series, splits.train_end, splits.validation_end, make_predictors(series, cand))
+        cand = train(series, splits.train_end, name, seed, params_override,
+                     trace=t["fit_initial"].setdefault(name, []) if t is not None else None)
+        rep = evaluate_window(series, splits.train_end, splits.validation_end, make_predictors(series, cand),
+                              trace=t["validation"].setdefault(name, []) if t is not None else None)
         validation[name] = {"score_mean_candidate_mae": _selection_score(rep), "fit_seconds": cand.fit_seconds,
                             "training_rows": cand.training_rows, "report": rep}
     scored = [(v["score_mean_candidate_mae"], i, n) for i, (n, v) in enumerate(validation.items()) if v["score_mean_candidate_mae"] is not None]
@@ -186,8 +199,10 @@ def run_experiment(series: TrainingSeries, seed: int, params_override: dict | No
                  "rule": "lowest mean validation candidate MAE across horizons; ties -> first listed"}
 
     # 2) Refit the frozen config on everything before the test period; 3) test.
-    final = train(series, splits.validation_end, selected, seed, params_override)
-    test = evaluate_window(series, splits.validation_end, splits.test_end, make_predictors(series, final))
+    final = train(series, splits.validation_end, selected, seed, params_override,
+                  trace=t["fit_final"] if t is not None else None)
+    test = evaluate_window(series, splits.validation_end, splits.test_end, make_predictors(series, final),
+                           trace=t["test"] if t is not None else None)
     report = {
         "series_id": series.series_id,
         "provenance": series.provenance,

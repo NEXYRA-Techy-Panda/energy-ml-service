@@ -2,9 +2,9 @@
 
 ## 0. Continuity and current layer (F0.1, 2026-09-24)
 
-- Current layer: **P016 / M2 trained forecast candidate (offline)** —
-  implementation completed, review **pending** (P013 accepted as a statistical
-  baseline based on reported evidence). Contract: **1.0.1 defined** (canonical
+- Current layer: **P021 / M2-R1 temporal evaluation correctness** —
+  implementation completed, review **pending** (P016 offline implementation
+  accepted based on supplied evidence; candidate not approved for production). Contract: **1.0.1 defined** (canonical
   `simulation-backend/contracts/v1/`, mirrored to siblings; replaces the
   unaccepted 1.0.0 prototype, no backward compatibility claimed).
 - Continuity files: [ACTIVE_TASK.md](ACTIVE_TASK.md) and [PROGRESS_LOG.md](PROGRESS_LOG.md).
@@ -122,6 +122,17 @@
   model_available false; API unchanged. Tests 103/103, pip check, verifier
   75/75. Evidence:
   [P016_TRAINED_FORECAST_CANDIDATE_EVIDENCE.md](P016_TRAINED_FORECAST_CANDIDATE_EVIDENCE.md).
+- P021 / M2-R1 addendum (2026-09-24, Agent B — Claude Code, completed,
+  review **pending**): traced audit of actual P016 examples — no boundary
+  defect. Initial fit latest target end = train cutoff 2026-07-12T18:30Z;
+  validation/selection and final refit latest target end = test start
+  2026-09-20T18:30Z; month origins whose month crosses a window end are
+  excluded; features end at or before each origin; test scores only observed
+  hours. Added optional trace hooks (behaviour-neutral), an audit script and
+  3 regression tests (106/106 pass). P016 metrics remain valid (diagnostic;
+  test already inspected). P016's promotion criteria were an agent proposal,
+  not an agreed gate; no promotion. Production unchanged; model_available
+  false. Evidence: [P021_TEMPORAL_BOUNDARY_EVIDENCE.md](P021_TEMPORAL_BOUNDARY_EVIDENCE.md).
 
 ## 1. Purpose and owner
 

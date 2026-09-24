@@ -80,9 +80,11 @@ def local_midnights(start: datetime, end: datetime, tz) -> list[datetime]:
     return out
 
 
-def build_training_rows(series: TrainingSeries, cutoff: datetime) -> tuple[np.ndarray, np.ndarray]:
+def build_training_rows(series: TrainingSeries, cutoff: datetime,
+                        trace: list[tuple[datetime, datetime]] | None = None) -> tuple[np.ndarray, np.ndarray]:
     """Rows (origin, lead) with origins at local midnights; every target hour ends
-    at or before `cutoff`, and each row's features see only hours before its origin."""
+    at or before `cutoff`, and each row's features see only hours before its origin.
+    `trace` (optional, audit only) receives the (origin, target_start) of every row."""
     hist = SortedHistory(series.history)
     xs: list[list[float]] = []
     ys: list[float] = []
@@ -99,15 +101,17 @@ def build_training_rows(series: TrainingSeries, cutoff: datetime) -> tuple[np.nd
                 continue  # missing target hour: not a training row (never 0)
             xs.append(features_for(ctx, t, series.tz, series.working_days))
             ys.append(y)
+            if trace is not None:
+                trace.append((origin, t))
     return np.asarray(xs, dtype=float), np.asarray(ys, dtype=float)
 
 
 def train(series: TrainingSeries, cutoff: datetime, config_name: str, seed: int = 0,
-          params_override: dict[str, Any] | None = None) -> Candidate:
-    """Fit on hours that END at or before `cutoff` only."""
+          params_override: dict[str, Any] | None = None, trace: list | None = None) -> Candidate:
+    """Fit on hours that END at or before `cutoff` only (`trace`: optional audit hook)."""
     params = {**CONFIGS[config_name], **(params_override or {})}
     t0 = time.perf_counter()
-    X, y = build_training_rows(series, cutoff)
+    X, y = build_training_rows(series, cutoff, trace)
     t1 = time.perf_counter()
     if len(y) == 0:
         raise CandidateUnavailable("no training rows before the cutoff")

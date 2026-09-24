@@ -168,11 +168,11 @@ def test_selection_is_frozen_before_any_test_forecast(monkeypatch, small):
     class Dummy:
         training_rows, fit_seconds, feature_build_seconds = 1, 0.0, 0.0
 
-    def fake_train(series, cutoff, name, seed, override=None):
+    def fake_train(series, cutoff, name, seed, override=None, trace=None):
         calls.append(("train", name, cutoff))
         return Dummy()
 
-    def fake_window(series, a, b, predictors):
+    def fake_window(series, a, b, predictors, trace=None):
         calls.append(("window", a, b))
         mae = {"hgb-mae-small": 0.3, "hgb-mse-small": 0.2, "hgb-mae-medium": 0.25}
         name = [c for c in calls if c[0] == "train"][-1][1]
@@ -226,3 +226,65 @@ def test_cli_generate_validate_roundtrip(tmp_path, capsys):
     assert summary["valid"] is True and summary["provenance"]["synthetic"] is True
     assert summary["observed_hours"] + summary["missing_hours"] == 20 * 24
     assert fmt_utc(load_training_input(out).start) == "2025-10-05T18:30:00Z"
+
+
+# ------------------------------------------------------------------ P021: target boundaries (not only origins)
+
+
+def test_training_origins_before_the_cutoff_never_contribute_targets_after_it(small):
+    from app.training.candidate import build_training_rows
+
+    cutoff = small.start + timedelta(days=40)
+    rows: list = []
+    build_training_rows(small, cutoff, trace=rows)
+    assert rows and all(t + timedelta(hours=1) <= cutoff for _, t in rows)
+    # Origins whose month-scale lead window (62 d) crosses the cutoff do contribute, but only truncated rows.
+    crossing = {o for o, _ in rows if o + timedelta(days=62) > cutoff}
+    assert crossing
+    for o in crossing:
+        month_end = ev.horizon_bounds("next_calendar_month", o, IST).end
+        if month_end > cutoff:
+            assert max(t for oo, t in rows if oo == o) + timedelta(hours=1) <= cutoff < month_end
+
+
+def test_month_origin_whose_month_crosses_the_window_end_is_excluded_from_scoring(small):
+    a, b = local(2025, 10, 20), local(2025, 11, 20)  # Nov 15 origin → December crosses b
+    assert ev.eval_origins("next_calendar_month", a, b, IST) == []
+    a2, b2 = local(2025, 10, 10), local(2025, 12, 1)  # Oct 15 → November ends exactly at b2: kept; Nov 15 excluded
+    assert ev.eval_origins("next_calendar_month", a2, b2, IST) == [local(2025, 10, 15)]
+    trace: list = []
+
+    def flat(o, h):
+        return {t: 1.0 for t in ev.horizon_bounds(h, o, IST).hours}
+
+    ev.evaluate_window(small, a2, b2, {"x": flat}, trace=trace)
+    assert trace and all(end <= b2 for _, _, end, _, _ in trace)
+    assert all(t + timedelta(hours=1) <= b2 for *_, scored in trace for t in scored)
+
+
+def test_test_period_outcomes_cannot_change_configuration_selection(monkeypatch):
+    # Shortened split for speed (same code path): train <= day 60, validation origins days 60-110, test after.
+    monkeypatch.setattr(ev, "TRAIN_DAYS", 60)
+    monkeypatch.setattr(ev, "VALIDATION_END_DAYS", 110)
+    clean = generate("seasonal_ac", 11, days=150)
+    s = ev.splits_for(clean)
+    poisoned = generate("seasonal_ac", 11, days=150)
+    poisoned.history = {t: (v if t + timedelta(hours=1) <= s.validation_end else 1e6) for t, v in clean.history.items()}
+    tiny = {"max_iter": 10}
+    ta: dict = {}
+    tb: dict = {}
+    ra, _ = ev.run_experiment(clean, 0, params_override=tiny, trace=ta)
+    rb, _ = ev.run_experiment(poisoned, 0, params_override=tiny, trace=tb)
+    # Selection inputs, the frozen choice and the final refit's examples are identical...
+    assert {n: v["score_mean_candidate_mae"] for n, v in ra["validation"].items()} == \
+        {n: v["score_mean_candidate_mae"] for n, v in rb["validation"].items()}
+    assert ra["selection"] == rb["selection"]
+    assert ta["fit_initial"] == tb["fit_initial"] and ta["fit_final"] == tb["fit_final"]
+    # ...while the test scores do see the poisoned outcomes.
+    assert rb["test"]["next_24h"]["methods"]["candidate"]["mae_kwh_per_hour"] > 1e5
+    # Long horizons cannot bypass: the Dec 15 validation origin (January crosses test start) was never scored.
+    crossing = local(2025, 12, 15)
+    assert ev.horizon_bounds("next_calendar_month", crossing, IST).end > s.validation_end
+    assert all(o != crossing for rows in ta["validation"].values() for h, o, *_ in rows if h == "next_calendar_month")
+    assert any(o == crossing for rows in ta["validation"].values() for h, o, *_ in rows if h == "next_24h")  # same origin, 24 h fits
+    assert all(end <= s.validation_end for rows in ta["validation"].values() for _, _, end, _, _ in rows)

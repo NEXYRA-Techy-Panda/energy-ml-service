@@ -2,17 +2,15 @@
 
 ## Assignment / Layer ID
 
-Agent B — Claude Code | P016 | M2 — trained forecast candidate.
+Agent B — Claude Code | P021 | M2-R1 — temporal evaluation correctness.
 Category: Mohan — Python ML. Owner: Mohan.
 
 ## Scope
 
-Exclusive write: energy-ml-service. Offline, reproducible training +
-temporal evaluation of a small scikit-learn hourly forecast candidate vs the
-P013 baseline and repeat-last-day, on explicitly synthetic data. Local
-bundles (not committed) with metadata; save/reload check. Production
-/v1/analyze and /v1/forecast unchanged; model_available stays false.
-First: correct P013 evaluation labels (energy error over common scored hours).
+Verify P016 training/selection never used targets from the final test period
+(including long-horizon forecasts crossing split dates). Trace actual
+examples per phase (initial fit, validation+selection, final refit, test) and
+horizon. Fix only if defective. No tuning, replacement model or promotion.
 
 ## Task status
 
@@ -24,34 +22,32 @@ pending
 
 ## Previous task outcome (preserved)
 
-P013 forecast baseline (`7f71363`) accepted as a statistical baseline based on
-reported evidence; synthetic metrics are not real-building evidence.
+P016 offline implementation accepted based on supplied evidence; candidate
+not approved for production; temporal correctness pending this task.
 
 ## Current branch
 
-`main` at `7f71363aa9361e67a0cb2815b98aee79b0708cf9` (== origin/main, clean).
+`main` at `677d1a06c1ac3c0b66380e00358d4d8e2fee69d9` (== origin/main, clean).
 
 ## Last checkpoint timestamp, including timezone
 
-2026-09-24 21:26:28 +05:30 (IST) — P016 implementation completed; committing + pushing.
+2026-09-24 22:22:18 +05:30 (IST) — P021 completed; committing + pushing.
 
 ## Completed work
 
-1. P013 evaluation labels corrected (common scored hours; expected vs scored); numbers unchanged; P013 evidence annotated.
-2. app/training/{input,synthetic,features,candidate,evaluate,cli}.py; /artifacts/ git-ignored.
-3. tests/test_training.py (21); full suite 103 passed; pip check clean; check_env OK; verifier 75/75.
-4. Bundle workflow verified (evaluate --save-bundle; predict --check-reload → identical).
-5. Suite (3 synthetic scenarios × seeds 101/202/303): candidate 15/27 cells better; trend_regime all worse (6 catastrophic); baseline stays preferred; not integrated.
-6. Docs: P016 evidence, README, HANDOFF, PROGRESS_LOG.
+1. Code reading + traced audit (scripts/audit_temporal_boundaries.py, trend_regime seed 101): no boundary defect; all invariants hold for all phases and horizons.
+2. Optional behaviour-neutral trace hooks in candidate.py/evaluate.py.
+3. 3 regression tests (training truncation at cutoff; crossing month origin excluded; test outcomes cannot change selection) — 106/106 pass; pip check clean; verifier 75/75.
+4. Docs: P021 evidence, P016 dated clarification (results valid; diagnostic only; promotion criteria were an agent proposal), HANDOFF, PROGRESS_LOG.
 
 ## Exact next action
 
-Commit + push, verify remote hash. Then STOP. Next (future assignment): robustness redesign (residual-to-profile target) pre-registered and evaluated on fresh seeds / real exports; no automatic promotion.
+Commit + push, verify remote hash. Then STOP. Candidate stays offline; any future promotion needs new held-out data and an agreed gate.
 
 ## Processes started by Agent B
 
-Only offline CLI/pytest runs (all exited). No services started; none running.
+Offline audit/pytest runs only (all exited). No services started; none running.
 
 ## Commit reference
 
-Base: `7f71363`. P016: the commit containing this file (hash in the P016 return report).
+Base: `677d1a0`. P021: the commit containing this file (hash in the P021 return report).
