@@ -278,3 +278,63 @@ correction entry; do not rewrite history.
 - Live port 8000: forecast 200 (24 points, 54.6749 kWh, day-class fallback
   disclosed), 72-hour history 422, analyze regression 200.
 - Next action: commit + push; stop after P013. Review pending.
+
+---
+
+## 2026-09-24 21:08:33 +05:30 (IST) — P013 accepted (recorded)
+
+- P013 (`7f71363aa9361e67a0cb2815b98aee79b0708cf9`) accepted as a statistical
+  baseline based on reported evidence. Its synthetic metrics are not
+  evidence of real-building performance.
+
+---
+
+## 2026-09-24 21:08:33 +05:30 (IST) — P016 / M2 started (actual)
+
+- Agent B — Claude Code | P016 | M2 (trained forecast candidate). Category:
+  Mohan — Python ML. Exclusive write scope: energy-ml-service.
+- Baseline `7f71363` == origin/main, clean; no AGENTS.md.
+- Finding before new work: P013's "aggregate energy error" was computed over
+  COMMON SCORED hours only (e.g. 639 of 672 expected hours for next_24h and
+  next_7d, 1343 of 1416 for the month, because of 5% missing synthetic hours)
+  but was labelled as a per-origin aggregate / total error. The calculation is
+  correct; the labels will be corrected (no numbers changed).
+- Next action: correct P013 evaluation labels; then offline training
+  workflow (input format, features, HGB candidate, temporal evaluation,
+  bundles, tests). Production API unchanged.
+
+---
+
+## 2026-09-24 21:19:01 +05:30 (IST) — P016 checkpoint: workflow done, suite running (actual)
+
+- Implemented app/training/{input,synthetic,features,candidate,evaluate,cli}.py;
+  tests/test_training.py 21 passed; full suite 103 passed; pip check clean;
+  verifier 75/75. Bundle workflow verified (evaluate --save-bundle, predict
+  --check-reload → reload_identical true).
+- Finding on trend_regime seed 101 (demo evaluate): the candidate beat the
+  baseline for the first test weeks, then from ~19 Oct 2026 predicted ~4 kWh
+  at working-day NIGHT hours (actual ~0.7). Cause: after the day-330 regime
+  change the 90-day night-hour medians (0.55–0.65) lie in a range the trees
+  only saw for daytime hours during training; tree ensembles do not
+  extrapolate and split on the profile value rather than the hour.
+- Decision: NO model redesign after inspecting test results (that would tune
+  on the test holdout). The candidate is reported as-is; a more robust design
+  (e.g. residual-to-profile target) is proposed for a future evaluation on
+  fresh seeds/scenarios.
+- Next action: wait for suite (artifacts/reports/p016-suite.json), then write
+  evidence and docs, commit + push.
+
+---
+
+## 2026-09-24 21:26:28 +05:30 (IST) — P016 / M2 completed (actual)
+
+- Suite (SYNTHETIC; seeds 101/202/303; 651 s): hours-weighted test MAE
+  (baseline vs candidate) — weekly_stable 0.120/0.114 (24h), 0.118/0.113 (7d),
+  0.120/0.116 (month); seasonal_ac 0.184/0.157, 0.186/0.159, 0.178/0.208;
+  trend_regime 0.270/1.090, 0.278/1.040, 0.375/1.302. Candidate better in
+  15/27 cells; catastrophic in 6 regime-change cells. 0 forecast failures;
+  common scored hours 95–97 % of expected.
+- Decision: candidate NOT integrated; P013 baseline stays production;
+  model_available false; API unchanged.
+- Verification: pytest 103 passed; pip check clean; check_env OK; verifier 75/75.
+- Next action: commit + push; stop after P016. Review pending.

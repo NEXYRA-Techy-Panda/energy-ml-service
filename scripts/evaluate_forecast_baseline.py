@@ -9,8 +9,11 @@ Run: .venv\\Scripts\\python.exe scripts\\evaluate_forecast_baseline.py   (Linux:
 - For each cutoff only earlier observations (latest <= 2,160) are visible;
   the following horizon's observed hours are the withheld truth.
 - Compared: profile-median baseline vs repeat-last-day, on identical hours.
-- Metrics: MAE (kWh/hour) and aggregate energy error per origin (kWh). No
-  percentages. Results describe synthetic data only, not real-building accuracy.
+- Metrics over COMMON SCORED HOURS (observed and predicted by both methods):
+  MAE (kWh/hour) and energy error over those hours per origin (kWh). With
+  missing hours this is not a complete-horizon total; expected vs scored
+  hours are reported. No percentages. Synthetic data only, not real-building
+  accuracy. (Labels corrected in P016; calculation unchanged.)
 """
 
 import json
@@ -45,19 +48,25 @@ def main() -> None:
               "history_hours_generated": len(history), "horizons": {}}
     for horizon, cutoffs in plans.items():
         totals = {"baseline": [0, 0.0, []], "repeat_last_day": [0, 0.0, []]}
+        expected = 0
         for cutoff in cutoffs:
-            for method, score in holdout(history, cutoff, horizon, IST, WORKING).items():
+            scores = holdout(history, cutoff, horizon, IST, WORKING)
+            expected += scores["baseline"].expected_hours
+            for method, score in scores.items():
                 acc = totals[method]
                 acc[0] += score.hours_scored
                 acc[1] += score.mae_kwh_per_hour * score.hours_scored
-                acc[2].append(score.aggregate_error_kwh)
+                acc[2].append(score.energy_error_common_kwh)
         report["horizons"][horizon] = {
             "origins": len(cutoffs),
+            "hours_expected": expected,
+            "hours_scored_common": totals["baseline"][0],
             **{method: {
-                "hours_scored": hours,
                 "mae_kwh_per_hour": round(abs_sum / hours, 4),
-                "mean_abs_aggregate_error_kwh_per_origin": round(sum(abs(e) for e in errs) / len(errs), 3),
-                "mean_aggregate_error_kwh_per_origin": round(sum(errs) / len(errs), 3),
+                "energy_error_over_common_scored_hours_kwh": {
+                    "mean_abs_per_origin": round(sum(abs(e) for e in errs) / len(errs), 3),
+                    "mean_per_origin": round(sum(errs) / len(errs), 3),
+                },
             } for method, (hours, abs_sum, errs) in totals.items()},
         }
     print(json.dumps(report, indent=2))

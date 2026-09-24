@@ -9,7 +9,7 @@ simulation and auditing project.
 - **Owner**: Mohan.
 - **Local port**: `8000`.
 
-## Status (P013, 2026-09-24)
+## Status (P016, 2026-09-24)
 
 Routes (contract 1.0.1, all in the `{data, meta:{request_id}}` / `{error}` envelopes):
 
@@ -46,6 +46,18 @@ zero.
 `.venv\Scripts\python.exe scripts\evaluate_forecast_baseline.py` —
 chronological holdout vs repeat-last-day; results describe synthetic data,
 not real-building accuracy.
+
+**Offline trained-forecast candidate (P016) — NOT deployed.** A small
+scikit-learn HistGradientBoosting candidate (origin-anchored features, direct
+multi-horizon strategy) can be trained, evaluated against the P013 baseline
+and repeat-last-day on temporal train/validation/test splits, saved as a
+local bundle and reloaded for offline prediction:
+`.venv\Scripts\python.exe -m app.training.cli {generate|validate|train|evaluate|suite|predict} …`
+(see [P016 evidence](docs/P016_TRAINED_FORECAST_CANDIDATE_EVIDENCE.md)).
+On SYNTHETIC data it beat the baseline in 15/27 cells but failed badly under
+a regime change, so **the baseline stays the production forecaster**;
+`model_available` stays `false`. `data/` and `artifacts/` (datasets,
+model bundles, reports) are git-ignored and generated locally.
 
 ## Setup (Python 3.13; no PowerShell execution-policy change needed)
 
@@ -94,5 +106,6 @@ Docs:
 - [F2-B evidence](docs/F2_B_EVIDENCE.md)
 - [P010 ML foundation evidence](docs/P010_ML_FOUNDATION_EVIDENCE.md)
 - [P013 forecast baseline evidence](docs/P013_FORECAST_BASELINE_EVIDENCE.md)
+- [P016 trained forecast candidate evidence](docs/P016_TRAINED_FORECAST_CANDIDATE_EVIDENCE.md)
 - [Data contract v1](contracts/v1/CONTRACT.md)
 - [Service interfaces](contracts/v1/API.md)

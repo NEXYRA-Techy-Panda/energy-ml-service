@@ -2,16 +2,17 @@
 
 ## Assignment / Layer ID
 
-Agent B — Claude Code | P013 | M1 — forecasting baseline.
-Category: Mohan — Python analysis. Owner: Mohan.
+Agent B — Claude Code | P016 | M2 — trained forecast candidate.
+Category: Mohan — Python ML. Owner: Mohan.
 
 ## Scope
 
-Exclusive write: energy-ml-service. POST /v1/forecast (contract API.md
-Example B) as a transparent statistical baseline (weekday-hour → day-class-hour
-→ hour-of-day medians) with strict validation, INSUFFICIENT_DATA when
-coverage is inadequate, chronological holdout evaluation (synthetic) kept
-out of the request path. /v1/analyze unchanged; model_available false.
+Exclusive write: energy-ml-service. Offline, reproducible training +
+temporal evaluation of a small scikit-learn hourly forecast candidate vs the
+P013 baseline and repeat-last-day, on explicitly synthetic data. Local
+bundles (not committed) with metadata; save/reload check. Production
+/v1/analyze and /v1/forecast unchanged; model_available stays false.
+First: correct P013 evaluation labels (energy error over common scored hours).
 
 ## Task status
 
@@ -23,34 +24,34 @@ pending
 
 ## Previous task outcome (preserved)
 
-P010 deterministic analysis foundation (`36f5832`) accepted based on evidence.
+P013 forecast baseline (`7f71363`) accepted as a statistical baseline based on
+reported evidence; synthetic metrics are not real-building evidence.
 
 ## Current branch
 
-`main` at `36f5832f298379c3a889a32673c409152aa8eaf0` (== origin/main, clean).
+`main` at `7f71363aa9361e67a0cb2815b98aee79b0708cf9` (== origin/main, clean).
 
 ## Last checkpoint timestamp, including timezone
 
-2026-09-24 21:01:23 +05:30 (IST) — P013 implementation completed; committing + pushing.
+2026-09-24 21:26:28 +05:30 (IST) — P016 implementation completed; committing + pushing.
 
 ## Completed work
 
-1. Startup: continuity, P010 evidence, API.md Example B, CONTRACT §8 read; P010 acceptance recorded.
-2. app/forecast/{constants,models,validate,baseline,service,evaluation,synthetic}.py; POST /v1/forecast; model-info baseline_version.
-3. tests/test_forecast.py (37) + updated expectations: 82/82 passed.
-4. scripts/evaluate_forecast_baseline.py (synthetic chronological holdout vs repeat-last-day).
-5. pip check clean; check_env OK; verifier 75/75.
-6. Live port-8000: health, model info, valid forecast 200, insufficient 422, analyze regression 200; processes stopped.
-7. Docs: README, HANDOFF, PROGRESS_LOG, P013_FORECAST_BASELINE_EVIDENCE.md.
+1. P013 evaluation labels corrected (common scored hours; expected vs scored); numbers unchanged; P013 evidence annotated.
+2. app/training/{input,synthetic,features,candidate,evaluate,cli}.py; /artifacts/ git-ignored.
+3. tests/test_training.py (21); full suite 103 passed; pip check clean; check_env OK; verifier 75/75.
+4. Bundle workflow verified (evaluate --save-bundle; predict --check-reload → identical).
+5. Suite (3 synthetic scenarios × seeds 101/202/303): candidate 15/27 cells better; trend_regime all worse (6 catastrophic); baseline stays preferred; not integrated.
+6. Docs: P016 evidence, README, HANDOFF, PROGRESS_LOG.
 
 ## Exact next action
 
-Commit + push, verify remote hash. Then STOP. Next integration action belongs to auditor-backend: call POST /v1/forecast server-side per the P013 evidence integration section.
+Commit + push, verify remote hash. Then STOP. Next (future assignment): robustness redesign (residual-to-profile target) pre-registered and evaluated on fresh seeds / real exports; no automatic promotion.
 
 ## Processes started by Agent B
 
-Python service (launcher 21928 → interpreter 15856) on port 8000 for live checks — stopped; none left running.
+Only offline CLI/pytest runs (all exited). No services started; none running.
 
 ## Commit reference
 
-Base: `36f5832`. P013: the commit containing this file (hash in the P013 return report).
+Base: `7f71363`. P016: the commit containing this file (hash in the P016 return report).

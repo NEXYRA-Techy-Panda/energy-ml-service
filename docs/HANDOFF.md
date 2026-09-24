@@ -2,9 +2,9 @@
 
 ## 0. Continuity and current layer (F0.1, 2026-09-24)
 
-- Current layer: **P013 / M1 forecasting baseline** — implementation
-  completed, review **pending** (P010 accepted based on evidence as a
-  deterministic rule foundation). Contract: **1.0.1 defined** (canonical
+- Current layer: **P016 / M2 trained forecast candidate (offline)** —
+  implementation completed, review **pending** (P013 accepted as a statistical
+  baseline based on reported evidence). Contract: **1.0.1 defined** (canonical
   `simulation-backend/contracts/v1/`, mirrored to siblings; replaces the
   unaccepted 1.0.0 prototype, no backward compatibility claimed).
 - Continuity files: [ACTIVE_TASK.md](ACTIVE_TASK.md) and [PROGRESS_LOG.md](PROGRESS_LOG.md).
@@ -107,6 +107,21 @@
   clean, verifier 75/75, live port-8000 checks. Evidence:
   [P013_FORECAST_BASELINE_EVIDENCE.md](P013_FORECAST_BASELINE_EVIDENCE.md).
   Next: auditor-backend integration (Codex/Mohan) per that document.
+- P016 / M2 addendum (2026-09-24, Agent B — Claude Code, implementation
+  completed, review **pending**): P013 evaluation labels corrected (energy
+  error over COMMON SCORED hours, expected vs scored hours; numbers
+  unchanged). Offline workflow app/training (training input
+  nexyra-hourly-training-v1; origin-anchored-v1 features; HGB candidate with 3
+  predetermined configs; temporal train ≤ day 280 / validation 280–350 /
+  test 350–430; selection frozen before test; identical origins + common
+  scored hours; local joblib bundles with metadata + SHA-256; save/reload
+  identical). SYNTHETIC results (3 scenarios × seeds 101/202/303): candidate
+  better in 15/27 cells (weekly_stable all; seasonal_ac 24h/7d) but worse in
+  all trend_regime cells, catastrophically in 6 (regime-shift
+  extrapolation). Decision: NOT integrated; baseline stays production;
+  model_available false; API unchanged. Tests 103/103, pip check, verifier
+  75/75. Evidence:
+  [P016_TRAINED_FORECAST_CANDIDATE_EVIDENCE.md](P016_TRAINED_FORECAST_CANDIDATE_EVIDENCE.md).
 
 ## 1. Purpose and owner
 

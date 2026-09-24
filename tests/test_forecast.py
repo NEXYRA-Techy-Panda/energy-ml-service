@@ -275,7 +275,7 @@ def test_holdout_cannot_see_future_observations():
     b = holdout(poisoned, cutoff, "next_7d", IST, {1, 2, 3, 4, 5})
     # Predictions must not change; only the scores against the (poisoned) truth differ.
     assert a["baseline"].hours_scored == b["baseline"].hours_scored == 168
-    assert b["baseline"].aggregate_error_kwh < -1e7 and b["repeat_last_day"].aggregate_error_kwh < -1e7
+    assert b["baseline"].energy_error_common_kwh < -1e7 and b["repeat_last_day"].energy_error_common_kwh < -1e7
     assert a["baseline"].mae_kwh_per_hour < 1.0
 
 
@@ -283,6 +283,7 @@ def test_holdout_compares_baseline_with_repeat_last_day_on_the_same_hours():
     hist = synthetic_history(local(2026, 1, 5), 42, seed=12)
     scores = holdout(hist, local(2026, 2, 9).astimezone(UTC), "next_7d", IST, {1, 2, 3, 4, 5})
     assert scores["baseline"].hours_scored == scores["repeat_last_day"].hours_scored == 168
+    assert scores["baseline"].expected_hours == 168
     assert scores["baseline"].mae_kwh_per_hour >= 0 and scores["repeat_last_day"].mae_kwh_per_hour >= 0
 
 
