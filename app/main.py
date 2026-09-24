@@ -16,6 +16,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .analysis.service import analyze
+from .anomalies.service import run_anomalies
 from .config import CONTRACT_VERSION
 from .forecast.constants import BASELINE_VERSION
 from .forecast.service import run_forecast
@@ -104,3 +105,9 @@ async def analyze_route(request: Request) -> dict:
 async def forecast_route(request: Request) -> dict:
     # Inline hourly history + calendar (API.md Example B); statistical baseline, no model.
     return envelope(request, run_forecast(await request.body()))
+
+
+@app.post("/v1/anomalies")
+async def anomalies_route(request: Request) -> dict:
+    # Additive P022 extension: excess-consumption deviation vs earlier comparable reference (statistical; no model).
+    return envelope(request, run_anomalies(await request.body()))

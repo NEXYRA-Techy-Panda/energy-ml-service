@@ -2,9 +2,8 @@
 
 ## 0. Continuity and current layer (F0.1, 2026-09-24)
 
-- Current layer: **P021 / M2-R1 temporal evaluation correctness** —
-  implementation completed, review **pending** (P016 offline implementation
-  accepted based on supplied evidence; candidate not approved for production). Contract: **1.0.1 defined** (canonical
+- Current layer: **P022 / M4 excess-consumption detection** — implementation
+  completed, review **pending** (P021 accepted based on supplied evidence). Contract: **1.0.1 defined** (canonical
   `simulation-backend/contracts/v1/`, mirrored to siblings; replaces the
   unaccepted 1.0.0 prototype, no backward compatibility claimed).
 - Continuity files: [ACTIVE_TASK.md](ACTIVE_TASK.md) and [PROGRESS_LOG.md](PROGRESS_LOG.md).
@@ -133,6 +132,18 @@
   test already inspected). P016's promotion criteria were an agent proposal,
   not an agreed gate; no promotion. Production unchanged; model_available
   false. Evidence: [P021_TEMPORAL_BOUNDARY_EVIDENCE.md](P021_TEMPORAL_BOUNDARY_EVIDENCE.md).
+- P022 / M4 addendum (2026-09-24, Agent B — Claude Code, implementation
+  completed, review **pending**): additive POST /v1/anomalies
+  (excess-power-request-v1 → excess-power-mad-v1): per-device robust
+  median/MAD reference from an earlier section only; fully-on, same-resolution
+  intervals; comfort-dependent devices conditioned on temperature/occupancy;
+  upward deviations only; explicit statuses, coverage, exclusions; not a
+  diagnosis; no drift detection. Per-section bounds 2000/2000 (413), body 16
+  MiB, reference must end before evaluation. Tests 130/130; synthetic
+  held-out diagnostic (seeds 7001–7005): TP 116, FP 0, FN 64 (subtle +6 %
+  below floor by design). /v1/analyze and /v1/forecast unchanged;
+  model_available false. Evidence:
+  [P022_EXCESS_CONSUMPTION_EVIDENCE.md](P022_EXCESS_CONSUMPTION_EVIDENCE.md).
 
 ## 1. Purpose and owner
 

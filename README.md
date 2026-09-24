@@ -9,7 +9,7 @@ simulation and auditing project.
 - **Owner**: Mohan.
 - **Local port**: `8000`.
 
-## Status (P016, 2026-09-24)
+## Status (P022, 2026-09-24)
 
 Routes (contract 1.0.1, all in the `{data, meta:{request_id}}` / `{error}` envelopes):
 
@@ -29,6 +29,17 @@ Routes (contract 1.0.1, all in the `{data, meta:{request_id}}` / `{error}` envel
   hour has no supported profile; ≤ 2,160 history hours (else 413). See
   [P013 evidence](docs/P013_FORECAST_BASELINE_EVIDENCE.md) for the complete
   request/response, time semantics and auditor integration.
+
+- `POST /v1/anomalies` → **excess-consumption deviation detector**
+  (additive P022 extension; `detector_version: "excess-power-mad-v1"`,
+  `method: "rule"`, `technique: "robust_median_mad"`): compares each
+  device's fully-on evaluation intervals with its OWN earlier comparable
+  reference intervals (comfort-dependent AC/refrigerator conditioned on room
+  temperature ±1 °C and occupancy ±1); threshold = median + max(4 × 1.4826 ×
+  MAD, max(10 W, 10 %)); ≥ 12 reference intervals over ≥ 2 h. Explicit
+  statuses + coverage + exclusions; not a malfunction diagnosis; no drift
+  detection. ≤ 2,000 device + 2,000 room intervals per section, body ≤ 16 MiB.
+  See [P022 evidence](docs/P022_EXCESS_CONSUMPTION_EVIDENCE.md).
 
 **Model vs baseline vs rule.** No trained model exists: `model_available`
 stays `false` and `model_version` stays `null`. The analysis rule and the
@@ -107,5 +118,7 @@ Docs:
 - [P010 ML foundation evidence](docs/P010_ML_FOUNDATION_EVIDENCE.md)
 - [P013 forecast baseline evidence](docs/P013_FORECAST_BASELINE_EVIDENCE.md)
 - [P016 trained forecast candidate evidence](docs/P016_TRAINED_FORECAST_CANDIDATE_EVIDENCE.md)
+- [P021 temporal boundary evidence](docs/P021_TEMPORAL_BOUNDARY_EVIDENCE.md)
+- [P022 excess-consumption detector evidence](docs/P022_EXCESS_CONSUMPTION_EVIDENCE.md)
 - [Data contract v1](contracts/v1/CONTRACT.md)
 - [Service interfaces](contracts/v1/API.md)

@@ -373,3 +373,46 @@ correction entry; do not rewrite history.
 - P016 metrics remain valid (diagnostic); promotion criteria were an agent
   proposal; no promotion. Production unchanged.
 - Next action: commit + push; stop after P021. Review pending.
+
+---
+
+## 2026-09-24 22:46:53 +05:30 (IST) — P021 accepted (recorded)
+
+- P021 (`ae23a61672f074a7673a86e6a793739ef7f1d607`) accepted based on supplied
+  evidence. P016's candidate remains offline; production forecasting stays on P013.
+
+---
+
+## 2026-09-24 22:46:53 +05:30 (IST) — P022 / M4 started (actual)
+
+- Agent B — Claude Code | P022 | M4 (excess-consumption detection). Category:
+  Mohan — Python analysis. Exclusive write scope: energy-ml-service.
+- Baseline `ae23a61` == origin/main, clean; no AGENTS.md; port 8000 free.
+- Frozen design (fixed before implementation/evaluation):
+  - Additive endpoint POST /v1/anomalies, request "excess-power-request-v1":
+    contract_version, dataset_id, run_id, rooms, devices, policies (P010
+    models), reference{window, room_intervals, device_intervals},
+    evaluation{window, room_intervals, device_intervals}, detector{version}?.
+    Per section <= 2000 device + 2000 room intervals (413); body <= 16 MiB
+    (413); reference.window.end <= evaluation.window.start.
+  - Detector "excess-power-mad-v1": compare a device only with its own
+    fully-on (on_fraction == 1), non-partial reference intervals at the same
+    interval_seconds; comfort-dependent types (ac, refrigerator) only against
+    reference intervals whose room temperature is within ±1.0 °C and
+    occupancy_avg within ±1.0 of the evaluated interval (else excluded /
+    insufficient). Baseline = median; spread = 1.4826 × MAD; threshold =
+    median + max(4 × spread, max(10 W, 10 % × median)); min reference support
+    12 intervals spanning >= 2 h; upward deviations only.
+- Next action: implement app/anomalies, route, tests, synthetic evaluation.
+
+---
+
+## 2026-09-24 22:54:31 +05:30 (IST) — P022 / M4 completed (actual)
+
+- POST /v1/anomalies (additive): excess-power-mad-v1 robust reference detector
+  with comparability rules, explicit statuses/coverage/exclusions.
+- Results: pytest 130 passed; pip check clean; check_env OK; verifier 75/75;
+  held-out synthetic diagnostic TP 116 / FP 0 / FN 64 (precision 1.0, recall
+  0.6444; strong 0.9667, subtle 0.0 by design); live finding + insufficient
+  responses; analyze/forecast unchanged; model_available false.
+- Next action: commit + push; stop after P022. Review pending.
