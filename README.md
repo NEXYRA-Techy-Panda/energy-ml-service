@@ -9,34 +9,43 @@ simulation and auditing project.
 - **Owner**: Mohan.
 - **Local port**: `8000`.
 
-## Status (P010, 2026-09-24)
+## Status (P013, 2026-09-24)
 
 Routes (contract 1.0.1, all in the `{data, meta:{request_id}}` / `{error}` envelopes):
 
 - `GET /health` → `{"status":"ok","model_available":false}`
 - `GET /v1/model/info` → `model_available: false`, `model_version: null`,
-  `baseline_version: null`, `contract_version: "1.0.1"`
-- `POST /v1/analyze` → **deterministic rule baseline** (`method: "rule"`,
-  rule `vacant-beyond-grace-v1`, finding type `vacant_but_on`): an eligible
-  device operated while its room was vacant beyond its vacancy grace.
-  Always-on exceptions are excluded; uncertain cases return warnings, not
-  invented waste. See [P010 evidence](docs/P010_ML_FOUNDATION_EVIDENCE.md)
-  for the complete request/response.
-- `POST /v1/forecast` → not implemented (404).
+  `baseline_version: "hourly-profile-median-v1"` (the statistical forecast
+  baseline — not a trained model), `contract_version: "1.0.1"`
+- `POST /v1/analyze` → **deterministic rule** (`method: "rule"`,
+  `vacant-beyond-grace-v1`); see [P010 evidence](docs/P010_ML_FOUNDATION_EVIDENCE.md).
+- `POST /v1/forecast` → **statistical hourly baseline** (`method:
+  "statistical_baseline"`, `baseline_version: "hourly-profile-median-v1"`,
+  `model_version: null`, `uncertainty: "unavailable"`): median of observed
+  history by local weekday+hour → working/non-working class+hour →
+  hour-of-day (disclosed fallbacks). Horizons `next_24h`, `next_7d` and
+  `next_calendar_month` (the complete next **local** calendar month).
+  422 `INSUFFICIENT_DATA` below 168/336/672 observed hours or when a horizon
+  hour has no supported profile; ≤ 2,160 history hours (else 413). See
+  [P013 evidence](docs/P013_FORECAST_BASELINE_EVIDENCE.md) for the complete
+  request/response, time semantics and auditor integration.
 
-**Model vs rule.** No trained model exists: `model_available` stays
-`false` and model versions stay `null`. `/v1/analyze` is a deterministic
-rule that needs no model, so it works and never returns
-`MODEL_UNAVAILABLE` merely because no model exists. It returns no
-probabilities and is not AI/ML. Future model-based analyses/forecasts will
-report `MODEL_UNAVAILABLE` until a validated model is loaded.
+**Model vs baseline vs rule.** No trained model exists: `model_available`
+stays `false` and `model_version` stays `null`. The analysis rule and the
+forecast baseline need no trained model, so they work and never return
+`MODEL_UNAVAILABLE` merely because none exists. Neither returns
+probabilities, confidence or prediction intervals, and neither is AI/ML.
 
-**Request bounds.** Inline data only (no database, files or callbacks): at
-most 2,000 device intervals and 2,000 room intervals per request (else 413
-`REQUEST_TOO_LARGE`). For the 18-device office at one-minute resolution that
-is roughly 111 minutes per request — **not a whole month**. The auditor
-backend must window long periods and include preceding context so vacancy
-grace can be established at window starts.
+**Request bounds and context.** Analyze: ≤ 2,000 device + 2,000 room
+intervals (~111 minutes of the 18-device office) — the auditor must window
+long periods with preceding context. Forecast: ≤ 2,160 complete hourly
+points (90 days) on the origin's hourly grid; missing hours are gaps, never
+zero.
+
+**Offline evaluation (synthetic data only):**
+`.venv\Scripts\python.exe scripts\evaluate_forecast_baseline.py` —
+chronological holdout vs repeat-last-day; results describe synthetic data,
+not real-building accuracy.
 
 ## Setup (Python 3.13; no PowerShell execution-policy change needed)
 
@@ -84,5 +93,6 @@ Docs:
 - [F1 evidence](docs/F1_EVIDENCE.md)
 - [F2-B evidence](docs/F2_B_EVIDENCE.md)
 - [P010 ML foundation evidence](docs/P010_ML_FOUNDATION_EVIDENCE.md)
+- [P013 forecast baseline evidence](docs/P013_FORECAST_BASELINE_EVIDENCE.md)
 - [Data contract v1](contracts/v1/CONTRACT.md)
 - [Service interfaces](contracts/v1/API.md)

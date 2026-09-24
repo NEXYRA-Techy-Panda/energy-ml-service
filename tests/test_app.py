@@ -25,12 +25,12 @@ def test_model_info_is_uninitialised_not_fabricated():
     assert res.json()["data"] == {
         "model_available": False,
         "model_version": None,
-        "baseline_version": None,
+        "baseline_version": "hourly-profile-median-v1",  # statistical forecast baseline, not a trained model
         "contract_version": "1.0.1",
     }
 
 
-@pytest.mark.parametrize("path", ["/v1/forecast", "/docs", "/openapi.json", "/api/v1/health"])
+@pytest.mark.parametrize("path", ["/docs", "/openapi.json", "/api/v1/health", "/v1/train"])
 def test_unimplemented_routes_return_not_found_envelope(path):
     res = client.post(path) if path.startswith("/v1/") else client.get(path)
     assert res.status_code == 404

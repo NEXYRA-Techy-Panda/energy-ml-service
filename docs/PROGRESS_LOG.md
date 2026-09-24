@@ -242,3 +242,39 @@ correction entry; do not rewrite history.
   avoidable, ₹0.10), fridge excluded.
 - model_available stays false; forecast not implemented.
 - Next action: commit + push; stop after P010. Review pending.
+
+---
+
+## 2026-09-24 20:53:32 +05:30 (IST) — P010 accepted (recorded)
+
+- P010 (`36f5832f298379c3a889a32673c409152aa8eaf0`) accepted based on
+  evidence as a deterministic rule foundation.
+
+---
+
+## 2026-09-24 20:53:32 +05:30 (IST) — P013 / M1 started (actual)
+
+- Agent B — Claude Code | P013 | M1 (forecasting baseline). Category: Mohan —
+  Python analysis. Exclusive write scope: energy-ml-service.
+- Baseline `36f5832` == origin/main, clean; no AGENTS.md.
+- Objective: POST /v1/forecast as an explainable statistical hourly baseline
+  (next_24h, next_7d, next_calendar_month) per contract Example B; no trained
+  model, no fabricated accuracy or intervals; chronological holdout
+  evaluation vs repeat-last-day on explicitly synthetic data.
+- Next action: freeze interface + eligibility constants, implement, test.
+
+---
+
+## 2026-09-24 21:01:23 +05:30 (IST) — P013 / M1 completed (actual)
+
+- POST /v1/forecast: statistical baseline hourly-profile-median-v1 (no model;
+  model_version null; uncertainty unavailable); strict validation (bounds
+  413, future observations, grid, duplicates, NaN, timezone, fault fields);
+  INSUFFICIENT_DATA 422 below eligibility; next_calendar_month = complete next
+  local month.
+- Results: pytest 82 passed; pip check clean; check_env OK; verifier 75/75;
+  synthetic holdout (seed 20260924) baseline MAE 0.1223/0.1218/0.1239 kWh/h
+  vs repeat-last-day 0.7018/1.3702/0.7765 (24h/7d/month) — synthetic only.
+- Live port 8000: forecast 200 (24 points, 54.6749 kWh, day-class fallback
+  disclosed), 72-hour history 422, analyze regression 200.
+- Next action: commit + push; stop after P013. Review pending.

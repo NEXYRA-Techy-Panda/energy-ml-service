@@ -289,7 +289,8 @@ def test_forbidden_fault_fields_are_rejected_anywhere(path):
 def test_health_and_model_info_stay_truthful_while_rule_analysis_works():
     assert client.get("/health").json()["data"] == {"status": "ok", "model_available": False}
     info = client.get("/v1/model/info").json()["data"]
-    assert info["model_available"] is False and info["model_version"] is None and info["baseline_version"] is None
+    assert info["model_available"] is False and info["model_version"] is None
+    assert info["baseline_version"] == "hourly-profile-median-v1"  # statistical baseline, not a trained model
     status, payload = post(fixture_request())
     assert status == 200 and "MODEL_UNAVAILABLE" not in json.dumps(payload)
-    assert client.post("/v1/forecast").status_code == 404
+    assert client.post("/v1/forecast", content=b"{}").json()["error"]["code"] == "VALIDATION_ERROR"  # route exists (P013)

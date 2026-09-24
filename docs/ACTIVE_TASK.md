@@ -2,21 +2,20 @@
 
 ## Assignment / Layer ID
 
-P010 — ML foundation (deterministic analysis baseline). Agent B — Claude
-Code. Category: foundation handoff + Mohan feature. Owner: Mohan.
+Agent B — Claude Code | P013 | M1 — forecasting baseline.
+Category: Mohan — Python analysis. Owner: Mohan.
 
 ## Scope
 
-Implement POST /v1/analyze as an explicit deterministic rule baseline
-("eligible device operated while its room was vacant beyond its vacancy
-grace"), with strict request validation (version, bounds, timestamps,
-references, policies, duplicates, energy consistency, ≤2000 device and
-≤2000 room intervals → 413, forbidden fault fields). No model training,
-no forecast, no DB/files/callbacks. model_available stays false.
+Exclusive write: energy-ml-service. POST /v1/forecast (contract API.md
+Example B) as a transparent statistical baseline (weekday-hour → day-class-hour
+→ hour-of-day medians) with strict validation, INSUFFICIENT_DATA when
+coverage is inadequate, chronological holdout evaluation (synthetic) kept
+out of the request path. /v1/analyze unchanged; model_available false.
 
 ## Task status
 
-completed
+completed (implementation); review pending
 
 ## Review status
 
@@ -24,33 +23,34 @@ pending
 
 ## Previous task outcome (preserved)
 
-F2-B scaffold (`22b0a08`) accepted based on supplied evidence.
+P010 deterministic analysis foundation (`36f5832`) accepted based on evidence.
 
 ## Current branch
 
-`main` at `22b0a08c29d79707588581227caaf3dbfa3f5aa3` (== origin/main, clean).
+`main` at `36f5832f298379c3a889a32673c409152aa8eaf0` (== origin/main, clean).
 
 ## Last checkpoint timestamp, including timezone
 
-2026-09-24 20:44:41 +05:30 (IST) — P010 ML implementation completed; committing + pushing.
+2026-09-24 21:01:23 +05:30 (IST) — P013 implementation completed; committing + pushing.
 
 ## Completed work
 
-1. Startup checks; fixture/oracle/API Example A read.
-2. app/errors.py; app/analysis/{models,validate,rules,service}.py; POST /v1/analyze.
-3. tests/test_analyze.py (37 cases) + scaffold test updated: 45/45.
-4. pip check clean; check_env OK; verifier 75/75.
-5. Live port-8000 check (health, model info, analyze fixture, fault field 400, 2001 → 413, forecast 404); processes stopped.
-6. Docs: README, HANDOFF, PROGRESS_LOG, P010_ML_FOUNDATION_EVIDENCE.md.
+1. Startup: continuity, P010 evidence, API.md Example B, CONTRACT §8 read; P010 acceptance recorded.
+2. app/forecast/{constants,models,validate,baseline,service,evaluation,synthetic}.py; POST /v1/forecast; model-info baseline_version.
+3. tests/test_forecast.py (37) + updated expectations: 82/82 passed.
+4. scripts/evaluate_forecast_baseline.py (synthetic chronological holdout vs repeat-last-day).
+5. pip check clean; check_env OK; verifier 75/75.
+6. Live port-8000: health, model info, valid forecast 200, insufficient 422, analyze regression 200; processes stopped.
+7. Docs: README, HANDOFF, PROGRESS_LOG, P013_FORECAST_BASELINE_EVIDENCE.md.
 
 ## Exact next action
 
-Commit + push energy-ml-service, verify remote hash. Then STOP — auditor orchestration (F4) and any model work only when assigned.
+Commit + push, verify remote hash. Then STOP. Next integration action belongs to auditor-backend: call POST /v1/forecast server-side per the P013 evidence integration section.
 
 ## Processes started by Agent B
 
-Python service (launcher 15684 → interpreter 21608) on port 8000 for the live check — stopped; none left running.
+Python service (launcher 21928 → interpreter 15856) on port 8000 for live checks — stopped; none left running.
 
 ## Commit reference
 
-Base: `22b0a08`. P010: the commit containing this file (hash in the P010 return report).
+Base: `36f5832`. P013: the commit containing this file (hash in the P013 return report).

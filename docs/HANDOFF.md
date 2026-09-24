@@ -2,9 +2,9 @@
 
 ## 0. Continuity and current layer (F0.1, 2026-09-24)
 
-- Current layer: **P010 ML foundation** (deterministic analysis baseline) —
-  status **completed**, review **pending** (F2-B accepted based on supplied
-  evidence). Contract: **1.0.1 defined** (canonical
+- Current layer: **P013 / M1 forecasting baseline** — implementation
+  completed, review **pending** (P010 accepted based on evidence as a
+  deterministic rule foundation). Contract: **1.0.1 defined** (canonical
   `simulation-backend/contracts/v1/`, mirrored to siblings; replaces the
   unaccepted 1.0.0 prototype, no backward compatibility claimed).
 - Continuity files: [ACTIVE_TASK.md](ACTIVE_TASK.md) and [PROGRESS_LOG.md](PROGRESS_LOG.md).
@@ -93,6 +93,20 @@
   check. Known dependency: simulator exports affected by the open run-policy
   timing defect will be rejected (future effective_from). Evidence:
   [P010_ML_FOUNDATION_EVIDENCE.md](P010_ML_FOUNDATION_EVIDENCE.md).
+- P013 / M1 addendum (2026-09-24, Agent B — Claude Code, implementation
+  completed, review **pending**): POST /v1/forecast implemented as the
+  statistical baseline hourly-profile-median-v1 (weekday+hour → day-class+hour
+  → hour-of-day medians; min support 2/3/3; eligibility 168/336/672 observed
+  hours; INSUFFICIENT_DATA 422). Example B interface with documented local
+  clarifications (origin-anchored hourly grid; local-clock origin required
+  for next_calendar_month; Asia/Kolkata only; model_version null +
+  baseline_version; no cost field). /v1/model/info now reports
+  baseline_version; model_available stays false. Offline chronological
+  holdout (synthetic, seed 20260924): baseline MAE ≈0.12 kWh/h vs
+  repeat-last-day 0.70–1.37 kWh/h — synthetic only. Tests 82/82, pip check
+  clean, verifier 75/75, live port-8000 checks. Evidence:
+  [P013_FORECAST_BASELINE_EVIDENCE.md](P013_FORECAST_BASELINE_EVIDENCE.md).
+  Next: auditor-backend integration (Codex/Mohan) per that document.
 
 ## 1. Purpose and owner
 

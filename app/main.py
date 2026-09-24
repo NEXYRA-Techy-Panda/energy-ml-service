@@ -1,11 +1,11 @@
-"""FastAPI application (contract 1.0.1): GET /health, GET /v1/model/info and
-POST /v1/analyze.
+"""FastAPI application (contract 1.0.1): GET /health, GET /v1/model/info,
+POST /v1/analyze and POST /v1/forecast.
 
 No model is trained or loaded, so the service reports model_available=false
-and never fabricates a model version or a prediction. POST /v1/analyze is a
-DETERMINISTIC RULE baseline (method "rule"); it needs no model and therefore
-does not return MODEL_UNAVAILABLE. /v1/forecast is deliberately not
-implemented.
+and model_version=null. POST /v1/analyze is a deterministic rule (method
+"rule") and POST /v1/forecast a statistical profile baseline (method
+"statistical_baseline", baseline_version reported); neither needs a trained
+model, so neither returns MODEL_UNAVAILABLE merely because none exists.
 """
 
 from uuid import uuid4
@@ -17,6 +17,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .analysis.service import analyze
 from .config import CONTRACT_VERSION
+from .forecast.constants import BASELINE_VERSION
+from .forecast.service import run_forecast
 from .errors import ApiError
 
 # Private service called only by auditor-backend: interactive docs and the
@@ -85,7 +87,8 @@ async def model_info(request: Request) -> dict:
         {
             "model_available": MODEL_AVAILABLE,
             "model_version": None,
-            "baseline_version": None,
+            # Statistical forecasting baseline (not a trained model); see /v1/forecast.
+            "baseline_version": BASELINE_VERSION,
             "contract_version": CONTRACT_VERSION,
         },
     )
@@ -95,3 +98,9 @@ async def model_info(request: Request) -> dict:
 async def analyze_route(request: Request) -> dict:
     # Inline bounded data only (API.md Example A): no database, files or callbacks.
     return envelope(request, analyze(await request.body()))
+
+
+@app.post("/v1/forecast")
+async def forecast_route(request: Request) -> dict:
+    # Inline hourly history + calendar (API.md Example B); statistical baseline, no model.
+    return envelope(request, run_forecast(await request.body()))
