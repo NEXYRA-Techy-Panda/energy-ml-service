@@ -150,5 +150,6 @@ Docs:
 - [P022 excess-consumption detector evidence](docs/P022_EXCESS_CONSUMPTION_EVIDENCE.md)
 - [P024 gradual trend evidence](docs/P024_GRADUAL_TREND_EVIDENCE.md)
 - [P029 Python release-readiness evidence](docs/P029_PYTHON_RELEASE_READINESS_EVIDENCE.md)
+- [Demo readiness](docs/DEMO_READINESS.md) · [Demo runbook](docs/DEMO_RUNBOOK.md) · [P029-PREP2 evidence](docs/P029_PREP2_DEMO_HANDOFF_EVIDENCE.md)
 - [Data contract v1](contracts/v1/CONTRACT.md)
 - [Service interfaces](contracts/v1/API.md)

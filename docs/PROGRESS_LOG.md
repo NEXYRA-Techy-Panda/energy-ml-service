@@ -524,3 +524,32 @@ correction entry; do not rewrite history.
   `22b0a08`, HANDOFF, P013 evidence). HANDOFF runtime updated to 19003.
 - Not verified: VPS service, Node integration of anomalies/drift, browsers,
   deployment. No listener started; no VPS command run.
+
+---
+
+## 2026-09-25 02:25 +05:30 (IST) — P029-PREP commit recorded; P029-PREP2 started
+
+- Correction: the P029-PREP ACTIVE_TASK pointed to PROGRESS_LOG for the commit
+  hash, but it was never recorded. P029-PREP commit is
+  `c49a152883ff8ca20385a305002400d9cef133d9` (pushed; local, origin/main and
+  ls-remote matched). Outcome preserved: completed, review pending;
+  deployment not observed.
+- P029-PREP2 (Developer Mohan | M-C — Claude Code): documentation-only demo
+  and release handoff. Base `c49a152`, clean, equal to local origin/main.
+  No AGENTS.md. Sibling docs read from committed `HEAD` snapshots only.
+
+---
+
+## 2026-09-25 02:40 +05:30 (IST) — P029-PREP2 completed (review pending)
+
+- Added DEMO_READINESS.md (supplied vs observed deployment, capability table,
+  claims, judge answers, criteria table, unchecked release checklist),
+  DEMO_RUNBOOK.md (isolated environment, 3-min core on the reference fixture,
+  conditional 5-min extension) and P029_PREP2 evidence.
+- Key findings: both frontends hard-code the public APIs (a local UI mutates
+  production); simulator export not implemented; no UI yet for P023/P026;
+  P026 `d0fcd09` deployment unconfirmed (502 under P026-R1); P028 economics
+  on an unmerged branch; comparison not confirmed.
+- Checks: referenced paths/routes exist at read commits; numbers match
+  `expected.json` and P017/P025 evidence. No tests/servers/probes run.
+- Next action: owner rehearsal and decisions; none for M-C.

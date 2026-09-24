@@ -2,16 +2,17 @@
 
 ## Assignment / Layer ID
 
-Developer Mohan | M-C — Claude Code | P029-PREP — Python release verification.
-Supporting Mohan release-readiness batch 28 / approximately 29.
+Developer Mohan | M-C — Claude Code | P029-PREP2 — Evidence-based demo and
+release handoff. Supporting release-readiness batch 28 / approximately 29.
+Remaining separate work: P026 recovery, P027 dashboard, P028 report
+integration, final verification.
 
 ## Scope
 
-Exclusive write: energy-ml-service. One repeatable smoke-check command
-(in-process default; explicit loopback HTTP mode) verifying health/model info,
-analyze, forecast, anomalies, drift and validation; .gitattributes LF rules;
-release-handoff documentation. No API behaviour change; no model work; no
-listener on 19003; no VPS execution.
+Exclusive write: energy-ml-service **documentation only**. DEMO_READINESS.md,
+DEMO_RUNBOOK.md, P029_PREP2 evidence, continuity. No code, dependency,
+contract, model or deployment change; no servers, probes or VPS operations.
+Sibling docs read from committed snapshots only.
 
 ## Task status
 
@@ -23,39 +24,37 @@ pending
 
 ## Previous task outcome (preserved)
 
-P024 completed (`208417e`), review pending; deployment commit `a0a86cc` fixed
-the port at 19003.
+P029-PREP completed, review pending: `python -m app.smoke`, commit
+`c49a152883ff8ca20385a305002400d9cef133d9` (pushed; local == origin/main ==
+ls-remote at the time). Deployment not observed.
 
 ## Current branch
 
-`main` (base `a0a86cc5d96b16082d8a1d1b911de7a7d1b2474d`).
+`main` (base `c49a152`).
 
 ## Last checkpoint timestamp, including timezone
 
-2026-09-25 02:20 +05:30 (IST) — P029-PREP implementation and verification complete.
+2026-09-25 02:40 +05:30 (IST) — documents written and cross-checked; committing.
 
 ## Completed work
 
-1. Startup; baseline and constraints recorded.
-2. `app/smoke.py` (`python -m app.smoke`): 11 checks, in-process / explicit
-   loopback HTTP, pass/fail/error/skip, exit 0/1/2, `--json` summary report.
-3. `tests/test_smoke.py` (14 tests); `.gitattributes` LF rules; `.gitignore`
-   for local smoke reports.
-4. Results: in-process 11/11 pass; pytest 167/167; pip check clean;
-   check_env OK; verifier 75/75. No application defect found.
-5. Docs: P029 evidence, README, HANDOFF (19003 runtime; stale 8000 marked
-   historical); Windows command paths restored in README/HANDOFF/P013.
+1. Context read (this repo + committed sibling snapshots; no AGENTS.md).
+2. docs/DEMO_READINESS.md, docs/DEMO_RUNBOOK.md,
+   docs/P029_PREP2_DEMO_HANDOFF_EVIDENCE.md.
+3. Paths, routes and known-answer numbers checked against committed sources.
 
 ## Exact next action
 
-None for M-C: P029-PREP stops here. Reviewer: run `python -m app.smoke` on the
-VPS with the service's existing interpreter (in-process, then `--url
-http://127.0.0.1:19003`) and record the fields in P029 evidence §8.
+None for M-C: P029-PREP2 stops here. Owner: rehearse the runbook §0 isolated
+environment, decide on a demo-configurable frontend build (M-A), and take
+the pricing/timeline decisions. Checklist items stay unchecked until their
+owners supply evidence.
 
 ## Processes started by M-C
 
-None (no listener started; in-process only).
+None.
 
 ## Commit reference
 
-Base: `a0a86cc`. P029-PREP: see PROGRESS_LOG (commit hash recorded after push).
+Base `c49a152`. P029-PREP2 commit: reported in the final report (not recorded
+here before it exists).

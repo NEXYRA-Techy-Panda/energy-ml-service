@@ -2,8 +2,11 @@
 
 ## 0. Continuity and current layer (F0.1, 2026-09-24)
 
-- Current layer: **P029-PREP Python release verification** (Developer Mohan |
-  M-C — Claude Code) — completed, review **pending**. Previous: P024 / M5
+- Current layer: **P029-PREP2 demo and release handoff** (Developer Mohan |
+  M-C — Claude Code, documentation only) — completed, review **pending**:
+  [DEMO_READINESS.md](DEMO_READINESS.md), [DEMO_RUNBOOK.md](DEMO_RUNBOOK.md).
+  Previous: **P029-PREP Python release verification** (`c49a152`) —
+  completed, review **pending**. Before that: P024 / M5
   gradual trend detection completed, review pending (P022 accepted for its
   narrow scope). Runtime: port fixed at **19003** since `a0a86cc` (PORT
   ignored); older "8000" mentions below are historical. Contract: **1.0.1 defined** (canonical
@@ -174,6 +177,13 @@
   In-process 11/11 pass; pytest 167/167; verifier 75/75. VPS, Node
   integration and browsers not verified by this task. Evidence:
   [P029_PYTHON_RELEASE_READINESS_EVIDENCE.md](P029_PYTHON_RELEASE_READINESS_EVIDENCE.md).
+- P029-PREP2 addendum (2026-09-25, M-C — Claude Code, documentation only,
+  completed, review **pending**): demo readiness + runbook from committed
+  evidence across all five repos. Release preparation only; outstanding
+  implementation and browser verification are not marked complete. Mutating
+  demos only on an isolated environment (frontends hard-code the public
+  APIs). Evidence:
+  [P029_PREP2_DEMO_HANDOFF_EVIDENCE.md](P029_PREP2_DEMO_HANDOFF_EVIDENCE.md).
 
 ## 1. Purpose and owner
 
